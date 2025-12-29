@@ -1,66 +1,75 @@
-import { useState, useEffect } from 'react'
+
+import { useState } from 'react';
+
+const navItems = [
+	{ label: 'Works', id: 'works' },
+	{ label: 'Services', id: 'services' },
+	{ label: 'About Me', id: 'about' },
+];
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false)
+	const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+	const scrollToSection = (id: string) => {
+		const element = document.getElementById(id);
+		if (element) {
+			element.scrollIntoView({ behavior: 'smooth' });
+			setMenuOpen(false);
+		}
+	};
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
+	return (
+		<nav className="fixed top-0 left-0 right-0 z-50 bg-transparent">
+			{/* Hamburger Icon */}
+			<div className="flex justify-end p-6">
+				<button
+					className="flex flex-col justify-center items-center w-10 h-10 focus:outline-none"
+					aria-label="Open menu"
+					onClick={() => setMenuOpen(true)}
+				>
+					<span className="block w-8 h-1 bg-black mb-1 rounded transition-all duration-300" />
+					<span className="block w-8 h-1 bg-black mb-1 rounded transition-all duration-300" />
+					<span className="block w-8 h-1 bg-black rounded transition-all duration-300" />
+				</button>
+			</div>
 
-  return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md py-4' : 'bg-white/95 backdrop-blur-sm py-6'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-        <button
-          onClick={() => scrollToSection('hero')}
-          className="text-xl font-helvetica font-normal text-gray-900"
-        >
-          Sapphire Pictures
-        </button>
+			{/* Overlay Menu with top-down animation */}
+			<div
+				className={`fixed inset-0 bg-[#f1f1f4] flex flex-col items-center z-50 transition-transform transition-opacity duration-500 ease-in-out
+				${menuOpen ? 'translate-y-0 opacity-100 pointer-events-auto' : '-translate-y-full opacity-0 pointer-events-none'}`}
+				style={{ justifyContent: 'center' }}
+			>
+				<div className="flex flex-col items-center gap-12">
+					{navItems.map((item, idx) => (
+						<button
+							key={item.id}
+							onClick={() => scrollToSection(item.id)}
+							className={`text-3xl font-helvetica text-black focus:outline-none transform transition-all duration-200 hover:text-blue-600 ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
+							style={{ transitionDelay: menuOpen ? `${idx * 100 + 100}ms` : '0ms' }}
+						>
+							{item.label}
+						</button>
+					))}
+					<button
+						onClick={() => scrollToSection('contact')}
+						className={`mt-2 w-80 max-w-xs py-6 bg-blue-600 text-white text-2xl font-helvetica rounded-none focus:outline-none transform transition-all duration-200 hover:bg-blue-700 ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
+						style={{ transitionDelay: menuOpen ? `${navItems.length * 100 + 100}ms` : '0ms' }}
+					>
+						Get in Touch
+					</button>
+				</div>
+				{/* Close button (X) */}
+				<button
+					className="absolute top-8 right-8 text-4xl text-gray-700 focus:outline-none"
+					aria-label="Close menu"
+					onClick={() => setMenuOpen(false)}
+				>
+					&times;
+				</button>
+			</div>
+		</nav>
+	);
+};
 
-        <div className="hidden md:flex items-center gap-8">
-          <button
-            onClick={() => scrollToSection('services')}
-            className="font-helvetica text-gray-700 transition-colors hover:text-gray-900"
-          >
-            Services
-          </button>
-          <button
-            onClick={() => scrollToSection('works')}
-            className="font-helvetica text-gray-700 transition-colors hover:text-gray-900"
-          >
-            Works
-          </button>
-          <button
-            onClick={() => scrollToSection('about')}
-            className="font-helvetica text-gray-700 transition-colors hover:text-gray-900"
-          >
-            About Me
-          </button>
-          <button
-            onClick={() => scrollToSection('contact')}
-            className="px-6 py-3 bg-blue-600 text-white font-helvetica hover:bg-blue-700 transition-all"
-          >
-            Get In Touch
-          </button>
-        </div>
-      </div>
-    </nav>
-  )
-}
+export default Navbar;
 
-export default Navbar
