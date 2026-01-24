@@ -25,8 +25,8 @@ const Contact = () => {
   return (
     <section id="contact" className="py-32 px-6 bg-black text-white">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-5xl md:text-6xl font-garnet mb-6 text-center">
-          LET'S WORK TOGETHER
+        <h2 className="text-5xl md:text-6xl font-merriweather font-bold mb-6 text-center">
+          Let's Work Together
         </h2>
         <p className="text-xl font-helvetica text-gray-300 mb-16 text-center max-w-2xl mx-auto">
           Have a project in mind? I'd love to hear about it. Drop me a message and let's create
@@ -35,7 +35,7 @@ const Contact = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="name" className="block font-helvetica font-bold text-sm mb-2 uppercase tracking-wider">
+            <label htmlFor="name" className="block font-helvetica text-sm mb-2">
               Name
             </label>
             <input
@@ -45,12 +45,12 @@ const Contact = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 bg-white text-black border-4 border-black focus:outline-none focus:border-primary-blue transition-colors font-helvetica"
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-white transition-colors font-helvetica"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block font-helvetica font-bold text-sm mb-2 uppercase tracking-wider">
+            <label htmlFor="email" className="block font-helvetica text-sm mb-2">
               Email
             </label>
             <input
@@ -60,12 +60,12 @@ const Contact = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 bg-white text-black border-4 border-black focus:outline-none focus:border-primary-blue transition-colors font-helvetica"
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-white transition-colors font-helvetica"
             />
           </div>
 
           <div>
-            <label htmlFor="message" className="block font-helvetica font-bold text-sm mb-2 uppercase tracking-wider">
+            <label htmlFor="message" className="block font-helvetica text-sm mb-2">
               Message
             </label>
             <textarea
@@ -75,25 +75,26 @@ const Contact = () => {
               onChange={handleChange}
               required
               rows={6}
-              className="w-full px-4 py-3 bg-white text-black border-4 border-black focus:outline-none focus:border-primary-blue transition-colors font-helvetica resize-none"
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-white transition-colors font-helvetica resize-none"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-4 bg-primary-blue text-white font-helvetica font-bold uppercase tracking-wider border-4 border-primary-blue hover:bg-white hover:text-black hover:border-black transition-all"
+            className="relative w-full py-4 bg-white text-black font-helvetica font-semibold rounded-lg overflow-hidden group transition-colors duration-300"
           >
-            Send Message
+            <span className="absolute inset-0 bg-blue-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></span>
+            <span className="relative z-10 group-hover:text-white transition-colors duration-300">Send Message</span>
           </button>
         </form>
 
         <div className="mt-16 text-center">
-          <p className="font-helvetica text-gray-400 mb-4 uppercase tracking-wider">Or reach out directly:</p>
+          <p className="font-helvetica text-gray-400 mb-4">Or reach out directly:</p>
           <a
-            href="mailto:hello@yourportfolio.com"
-            className="font-helvetica text-xl hover:text-primary-blue transition-colors"
+            href="mailto:sapphirepictures1@gmail.com"
+            className="font-helvetica text-xl hover:underline"
           >
-            hello@yourportfolio.com
+            sapphirepictures1@gmail.com
           </a>
         </div>
       </div>

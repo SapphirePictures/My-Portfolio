@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Lenis from 'lenis'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -8,6 +8,8 @@ import About from './components/About'
 import Contact from './components/Contact'
 
 function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false)
+
   useEffect(() => {
     // Initialize Lenis smooth scroll
     const lenis = new Lenis({
@@ -30,14 +32,49 @@ function App() {
 
     requestAnimationFrame(raf)
 
+    // Dark mode scroll detection
+    const handleScroll = () => {
+      const worksSection = document.getElementById('works')
+      const aboutSection = document.getElementById('about')
+      
+      if (worksSection && aboutSection) {
+        const worksTop = worksSection.offsetTop - 200
+        const aboutTop = aboutSection.offsetTop - 200
+        const scrollPosition = window.scrollY
+        
+        // Dark mode active between works start and about start
+        if (scrollPosition >= worksTop && scrollPosition < aboutTop) {
+          setIsDarkMode(true)
+        } else {
+          setIsDarkMode(false)
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    
+    // Don't check initial position - let it be false by default
+    // handleScroll()
+
     // Cleanup
     return () => {
       lenis.destroy()
+      window.removeEventListener('scroll', handleScroll)
     }
   }, [])
 
+  useEffect(() => {
+    // Toggle dark class on html element for Tailwind dark mode
+    console.log('Dark mode changed to:', isDarkMode)
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [isDarkMode])
+
   return (
-    <div className="font-helvetica">
+    <div className="font-helvetica transition-colors duration-700" style={{ backgroundColor: isDarkMode ? '#000000' : '#ffffff' }}>
       <Navbar />
       <Hero />
       <FeaturedWorks />

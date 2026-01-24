@@ -1,14 +1,3 @@
-/* Animation for service description scroll-down */
-@keyframes scrollDown {
-  0% {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 #root {
   max-width: 1280px;
   margin: 0 auto;

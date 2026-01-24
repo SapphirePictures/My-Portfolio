@@ -41,12 +41,12 @@ const Hero = () => {
   }, [hasAnimated, descriptionVisible])
 
   return (
-    <section id="hero" className="min-h-screen bg-gray-100">
+    <section id="hero" className="min-h-screen">
       {/* Top Section with Title */}
       <div className="pt-32 pb-12 px-6">
         <div className="w-full overflow-hidden">
           <h1 
-            className="text-[18vw] sm:text-[16vw] md:text-[14vw] lg:text-[12vw] xl:text-[10vw] font-garnet text-blue-600 leading-none tracking-tighter uppercase whitespace-nowrap"
+            className="text-[18vw] sm:text-[16vw] md:text-[14vw] lg:text-[12vw] xl:text-[10vw] font-garnet text-blue-600 dark:text-blue-500 leading-none tracking-tighter uppercase whitespace-nowrap transition-colors duration-700"
             style={{
               animation: 'slideUp 0.6s ease-out forwards',
               transform: 'translateY(100%)'
@@ -58,7 +58,7 @@ const Hero = () => {
       </div>
 
       {/* Video Section with Tagline */}
-      <div className="relative w-full h-[60vh] overflow-hidden bg-gradient-to-br from-gray-700 via-gray-600 to-gray-500">
+      <div className="relative w-full h-[60vh] overflow-hidden bg-gradient-to-br from-white via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-500 transition-colors duration-700">
         {/* Video Background */}
         <video
           autoPlay
@@ -74,8 +74,8 @@ const Hero = () => {
           />
         </video>
 
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/20"></div>
+        {/* Overlay: always black */}
+        <div className="absolute inset-0 bg-black/40 transition-colors duration-700"></div>
 
         {/* Tagline */}
         <div className="absolute bottom-8 left-8 right-8 overflow-hidden">
@@ -93,13 +93,18 @@ const Hero = () => {
       </div>
 
       {/* Description Section */}
-      <div className="py-32 px-6 bg-white overflow-hidden">
-        <div className="w-full max-w-7xl mx-auto">
+      <div className="h-[60vh] md:h-[75vh] flex items-center px-6 overflow-hidden">
+        <div className="w-full max-w-7xl mx-0 flex justify-start">
           <p 
             ref={descriptionRef}
-            className="text-3xl md:text-5xl lg:text-6xl font-helvetica text-gray-400 leading-tight font-light"
+            className="text-3xl md:text-5xl lg:text-6xl font-helvetica text-gray-400 dark:text-gray-500 leading-tight font-light transition-colors duration-700 text-left"
+            style={{ maxWidth: '1400px', marginLeft: 0 }}
           >
-            {['Visual designer crafting bold brand', 'identities, clean interfaces, and expressive', 'illustrations for modern businesses.'].map((line, index) => (
+            {[
+              'Visual designer crafting bold brand identities,',
+              'clean interfaces, and expressive illustrations',
+              'for modern businesses.'
+            ].map((line, index) => (
               <span
                 key={index}
                 className="block overflow-hidden"

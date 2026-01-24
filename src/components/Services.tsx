@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 const Services = () => {
   const bodyTextRef = useRef<HTMLParagraphElement>(null)
   const [bodyTextVisible, setBodyTextVisible] = useState(false)
-  const servicesRef = useRef<HTMLDivElement>(null)
-  const [servicesVisible, setServicesVisible] = useState(false)
+  const serviceRefs = useRef<(HTMLDivElement | null)[]>([])
+  const [visibleServices, setVisibleServices] = useState<boolean[]>([])
 
   const services = [
     {
@@ -34,6 +34,10 @@ const Services = () => {
   ]
 
   useEffect(() => {
+    setVisibleServices(new Array(services.length).fill(false))
+  }, [])
+
+  useEffect(() => {
     const handleScroll = () => {
       if (bodyTextRef.current && !bodyTextVisible) {
         const rect = bodyTextRef.current.getBoundingClientRect()
@@ -44,31 +48,37 @@ const Services = () => {
         }
       }
 
-      if (servicesRef.current && !servicesVisible) {
-        const rect = servicesRef.current.getBoundingClientRect()
-        const windowHeight = window.innerHeight
-        
-        if (rect.top < windowHeight * 0.8) {
-          setServicesVisible(true)
+      serviceRefs.current.forEach((ref, index) => {
+        if (ref && !visibleServices[index]) {
+          const rect = ref.getBoundingClientRect()
+          const windowHeight = window.innerHeight
+          
+          if (rect.top < windowHeight * 0.8) {
+            setVisibleServices(prev => {
+              const newVisible = [...prev]
+              newVisible[index] = true
+              return newVisible
+            })
+          }
         }
-      }
+      })
     }
 
     window.addEventListener('scroll', handleScroll)
     handleScroll()
     
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [bodyTextVisible, servicesVisible])
+  }, [bodyTextVisible, visibleServices])
 
   return (
-    <section id="services" className="py-32 px-6 bg-white">
+    <section id="services" className="py-32 px-6 bg-transparent transition-colors duration-700">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-sm md:text-base font-helvetica font-normal text-gray-900 mb-12 tracking-wide uppercase">
+        <h2 className="text-sm md:text-base font-helvetica font-normal text-gray-900 dark:text-gray-100 mb-12 tracking-wide uppercase">
           Services
         </h2>
         <p 
           ref={bodyTextRef}
-          className="text-3xl md:text-5xl lg:text-6xl font-helvetica text-gray-400 mb-24 leading-tight font-light"
+          className="text-3xl md:text-5xl lg:text-6xl font-helvetica text-gray-400 dark:text-gray-500 mb-24 leading-tight font-light"
         >
           {[
             'I help brands connect strategy and design',
@@ -93,22 +103,25 @@ const Services = () => {
           ))}
         </p>
 
-        <div ref={servicesRef} className="space-y-12">
+        <div className="space-y-12">
           {services.map((service, index) => (
             <div
               key={index}
-              className="border-b border-gray-200 pb-10 last:border-b-0 overflow-hidden"
+              ref={(el) => (serviceRefs.current[index] = el)}
+              className="group border-b border-gray-200 dark:border-gray-700 pb-10 last:border-b-0 overflow-hidden cursor-pointer"
             >
               <div
                 style={{
-                  animation: servicesVisible ? `slideUp 0.8s ease-out ${index * 0.1}s forwards` : 'none',
-                  transform: servicesVisible ? 'translateY(0)' : 'translateY(100%)'
+                  animation: visibleServices[index] ? 'slideUp 0.8s ease-out forwards' : 'none',
+                  transform: visibleServices[index] ? 'translateY(0)' : 'translateY(100%)'
                 }}
               >
-                <h3 className="text-xl md:text-2xl font-helvetica font-normal text-gray-900 mb-3">
+                <h3 className="text-xl md:text-2xl font-helvetica font-normal text-gray-900 dark:text-white mb-3">
                   {service.title}
                 </h3>
-                <p className="font-helvetica text-gray-600 text-base md:text-lg leading-relaxed font-light">
+                <p
+                  className="font-helvetica text-gray-600 dark:text-gray-300 text-base md:text-lg leading-relaxed font-light opacity-0 group-hover:opacity-100 group-hover:animate-scroll-down"
+                >
                   {service.description}
                 </p>
               </div>
