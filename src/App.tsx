@@ -75,7 +75,7 @@ function App() {
 
   return (
     <div className="font-helvetica transition-colors duration-700" style={{ backgroundColor: isDarkMode ? '#000000' : '#ffffff' }}>
-      <Navbar />
+      <Navbar isDarkMode={isDarkMode} />
       <Hero />
       <FeaturedWorks />
       <Services />

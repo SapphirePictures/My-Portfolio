@@ -7,7 +7,7 @@ const navItems = [
 	{ label: 'About Me', id: 'about' },
 ];
 
-const Navbar = () => {
+const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {
 	const [menuOpen, setMenuOpen] = useState(false);
 
 	const scrollToSection = (id: string) => {
@@ -27,9 +27,9 @@ const Navbar = () => {
 					aria-label="Open menu"
 					onClick={() => setMenuOpen(true)}
 				>
-					<span className="block w-8 h-1 bg-black mb-1 rounded transition-all duration-300" />
-					<span className="block w-8 h-1 bg-black mb-1 rounded transition-all duration-300" />
-					<span className="block w-8 h-1 bg-black rounded transition-all duration-300" />
+					<span className={`block w-8 h-1 mb-1 rounded transition-all duration-300 ${isDarkMode ? 'bg-white' : 'bg-black'}`} />
+					<span className={`block w-8 h-1 mb-1 rounded transition-all duration-300 ${isDarkMode ? 'bg-white' : 'bg-black'}`} />
+					<span className={`block w-8 h-1 rounded transition-all duration-300 ${isDarkMode ? 'bg-white' : 'bg-black'}`} />
 				</button>
 			</div>
 

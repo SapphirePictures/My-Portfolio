@@ -23,14 +23,6 @@ const Services = () => {
       title: 'Web Development',
       description: 'Building robust, scalable applications with modern technologies and best practices.',
     },
-    {
-      title: 'Motion Design',
-      description: 'Bringing brand emotion to life through movement and narrative-driven motion content.',
-    },
-    {
-      title: 'Digital Strategy',
-      description: 'Extending visual possibilities, accelerating concept exploration, and enhancing storytelling.',
-    },
   ]
 
   useEffect(() => {
@@ -72,7 +64,7 @@ const Services = () => {
 
   return (
     <section id="services" className="py-32 px-6 bg-transparent transition-colors duration-700">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <h2 className="text-sm md:text-base font-helvetica font-normal text-gray-900 dark:text-gray-100 mb-12 tracking-wide uppercase">
           Services
         </h2>
@@ -103,12 +95,12 @@ const Services = () => {
           ))}
         </p>
 
-        <div className="space-y-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {services.map((service, index) => (
             <div
               key={index}
               ref={(el) => (serviceRefs.current[index] = el)}
-              className="group border-b border-gray-200 dark:border-gray-700 pb-10 last:border-b-0 overflow-hidden cursor-pointer"
+              className="group bg-gray-100 dark:bg-gray-800 p-8 transition-colors duration-700 overflow-hidden"
             >
               <div
                 style={{
@@ -116,11 +108,11 @@ const Services = () => {
                   transform: visibleServices[index] ? 'translateY(0)' : 'translateY(100%)'
                 }}
               >
-                <h3 className="text-xl md:text-2xl font-helvetica font-normal text-gray-900 dark:text-white mb-3">
+                <h3 className="text-2xl md:text-3xl font-helvetica font-normal text-gray-900 dark:text-white mb-4">
                   {service.title}
                 </h3>
                 <p
-                  className="font-helvetica text-gray-600 dark:text-gray-300 text-base md:text-lg leading-relaxed font-light opacity-0 group-hover:opacity-100 group-hover:animate-scroll-down"
+                  className="font-helvetica text-gray-600 dark:text-gray-300 text-base md:text-lg leading-relaxed font-light"
                 >
                   {service.description}
                 </p>
