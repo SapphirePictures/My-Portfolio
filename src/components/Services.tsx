@@ -25,6 +25,17 @@ const Services = () => {
     },
   ]
 
+  const skills = [
+    'React & TypeScript',
+    'Node.js & Express',
+    'UI/UX Design',
+    'Figma & Adobe Suite',
+    'Tailwind CSS',
+    'Next.js',
+    'MongoDB & PostgreSQL',
+    'Git & CI/CD',
+  ]
+
   useEffect(() => {
     setVisibleServices(new Array(services.length).fill(false))
   }, [])
@@ -66,17 +77,17 @@ const Services = () => {
     <section id="services" className="py-32 px-6 bg-transparent transition-colors duration-700">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-sm md:text-base font-helvetica font-normal text-gray-900 dark:text-gray-100 mb-12 tracking-wide uppercase">
-          Services
+          Skills
         </h2>
         <p 
           ref={bodyTextRef}
           className="text-3xl md:text-5xl lg:text-6xl font-helvetica text-gray-400 dark:text-gray-500 mb-24 leading-tight font-light"
         >
           {[
-            'I help brands connect strategy and design',
-            'through a multidisciplinary approach. Each service is crafted',
-            'to bring clarity, emotion, and cohesion to how brands express',
-            'themselves.'
+            'Expertise across a range of disciplines',
+            'combined with strategic thinking to deliver',
+            'cohesive creative solutions that elevate',
+            'your brand.'
           ].map((line, index) => (
             <span
               key={index}
@@ -95,28 +106,13 @@ const Services = () => {
           ))}
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {services.map((service, index) => (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {skills.map((skill, index) => (
             <div
               key={index}
-              ref={(el) => (serviceRefs.current[index] = el)}
-              className="group bg-gray-100 dark:bg-gray-800 p-8 transition-colors duration-700 overflow-hidden"
+              className="bg-gray-50 dark:bg-gray-800 px-4 py-3 rounded-lg font-helvetica text-gray-700 dark:text-gray-300 text-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-700"
             >
-              <div
-                style={{
-                  animation: visibleServices[index] ? 'slideUp 0.8s ease-out forwards' : 'none',
-                  transform: visibleServices[index] ? 'translateY(0)' : 'translateY(100%)'
-                }}
-              >
-                <h3 className="text-2xl md:text-3xl font-helvetica font-normal text-gray-900 dark:text-white mb-4">
-                  {service.title}
-                </h3>
-                <p
-                  className="font-helvetica text-gray-600 dark:text-gray-300 text-base md:text-lg leading-relaxed font-light"
-                >
-                  {service.description}
-                </p>
-              </div>
+              {skill}
             </div>
           ))}
         </div>

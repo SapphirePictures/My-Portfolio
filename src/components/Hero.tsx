@@ -52,7 +52,7 @@ const Hero = () => {
               transform: 'translateY(100%)'
             }}
           >
-            SAPPHIRE-INC.
+            SAPPHIRE INC.
           </h1>
         </div>
       </div>

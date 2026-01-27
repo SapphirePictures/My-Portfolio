@@ -85,7 +85,7 @@ function App() {
       <footer className="bg-black text-white py-8 px-6">
         <div className="max-w-7xl mx-auto text-center">
           <p className="font-helvetica text-gray-400">
-            © 2025 Wesley Saapphire. All rights reserved.
+            © 2025 Wesley Sapphire Inc. All rights reserved.
           </p>
         </div>
       </footer>

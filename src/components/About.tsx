@@ -1,56 +1,105 @@
+import { useEffect, useRef, useState } from 'react'
+
+const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max)
+
 const About = () => {
-  const skills = [
-    'React & TypeScript',
-    'Node.js & Express',
-    'UI/UX Design',
-    'Figma & Adobe Suite',
-    'Tailwind CSS',
-    'Next.js',
-    'MongoDB & PostgreSQL',
-    'Git & CI/CD',
-  ]
+  const sectionRef = useRef<HTMLElement | null>(null)
+  const nameRef = useRef<HTMLHeadingElement | null>(null)
+  const [isInView, setIsInView] = useState(false)
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section || !nameRef.current) return
+
+    const observer = new IntersectionObserver(
+      entries => {
+        const entry = entries[0]
+        setIsInView(entry.isIntersecting)
+      },
+      { threshold: 0.1 }
+    )
+    observer.observe(section)
+
+    let rafId = 0
+    const onScroll = () => {
+      if (!section || !nameRef.current) return
+      const rect = section.getBoundingClientRect()
+      const viewportH = window.innerHeight
+      const progress = clamp(1 - rect.top / viewportH, -1, 2)
+      const offset = clamp(progress * 80, -120, 120)
+      nameRef.current.style.transform = `translateY(${offset}px)`
+    }
+
+    const loop = () => {
+      onScroll()
+      rafId = requestAnimationFrame(loop)
+    }
+    loop()
+
+    return () => {
+      observer.disconnect()
+      cancelAnimationFrame(rafId)
+    }
+  }, [])
 
   return (
-    <section id="about" className="py-32 px-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div>
-            <h2 className="text-5xl md:text-6xl font-merriweather font-bold text-gray-900 dark:text-white mb-6 transition-colors duration-700">
-              About Me
+    <section id="about" ref={sectionRef} className="relative min-h-screen bg-white dark:bg-black overflow-hidden px-6">
+      {/* Background Title */}
+      <div className="absolute inset-x-0 top-6 pointer-events-none select-none z-0">
+        <h1
+          className="text-[18vw] sm:text-[16vw] md:text-[14vw] lg:text-[12vw] xl:text-[10vw] font-helvetica font-extralight text-blue-600 dark:text-blue-500 leading-none uppercase whitespace-nowrap tracking-[0.02em]"
+          style={{ lineHeight: 0.85 }}
+        >
+          ABOUT ME
+        </h1>
+      </div>
+
+      {/* Content layer */}
+      <div className="relative z-10 px-0 md:px-2 lg:px-6 pt-24 md:pt-28">
+        <div className="max-w-7xl mx-auto relative">
+          {/* Floating Name on the left */}
+          <div className="md:w-1/2">
+            <h2
+              ref={nameRef}
+              className="text-blue-600 dark:text-blue-500 text-5xl md:text-6xl lg:text-7xl font-helvetica font-bold uppercase tracking-tight"
+              style={{ transform: 'translateY(0px)', transition: isInView ? 'transform 0.1s linear' : 'none' }}
+            >
+              WESLEY OJEDAPO
             </h2>
-            <p className="font-helvetica text-lg text-gray-600 dark:text-gray-400 mb-6 leading-relaxed transition-colors duration-700">
-              I'm a passionate creative professional with over 5 years of experience in designing
-              and developing digital experiences. My work combines technical expertise with
-              creative vision to deliver exceptional results.
-            </p>
-            <p className="font-helvetica text-lg text-gray-600 dark:text-gray-400 mb-6 leading-relaxed transition-colors duration-700">
-              I believe in the power of good design to transform businesses and create meaningful
-              connections with users. Every project is an opportunity to push boundaries and
-              create something extraordinary.
-            </p>
-            <p className="font-helvetica text-lg text-gray-600 dark:text-gray-400 leading-relaxed transition-colors duration-700">
-              When I'm not coding or designing, you'll find me exploring new technologies,
-              contributing to open-source projects, or sharing knowledge with the community.
-            </p>
+
+            {/* CTA below the name on the left */}
+            <div className="mt-96">
+              <a
+                href="#contact"
+                className="inline-flex items-center justify-center px-12 py-7 bg-blue-600 text-white text-3xl rounded-none font-helvetica hover:bg-blue-700 transition-colors"
+              >
+                Get to know Me
+              </a>
+            </div>
+
+            {/* Short description */}
+            <div className="absolute top-96 left-0 w-96">
+              <p className="font-helvetica text-base text-gray-600 dark:text-gray-400 leading-relaxed">
+                Visual designer crafting bold brand identities and clean interfaces for modern businesses.
+              </p>
+            </div>
           </div>
 
-          <div>
-            <h3 className="text-3xl font-merriweather font-bold text-gray-900 dark:text-white mb-6 transition-colors duration-700">
-              Skills & Expertise
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              {skills.map((skill, index) => (
-                <div
-                  key={index}
-                  className="bg-gray-50 dark:bg-gray-800 px-4 py-3 rounded-lg font-helvetica text-gray-700 dark:text-gray-300 text-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-700"
-                >
-                  {skill}
-                </div>
-              ))}
+          {/* Portrait Image overlayed above the big title - large contained div */}
+          <div className="md:absolute md:right-0 md:top-6 lg:top-12 z-20 w-full md:w-auto" style={{ height: '120vh' }}>
+            <div className="relative h-full w-full flex items-center justify-end">
+              <img
+                src="/assets/about/PNG.png"
+                alt="Portrait of Wesley"
+                className="h-full w-auto object-contain scale-125"
+                style={{ filter: 'drop-shadow(0 20px 50px rgba(0,0,0,0.25))', maxHeight: '120vh' }}
+              />
             </div>
           </div>
         </div>
       </div>
+
+
     </section>
   )
 }

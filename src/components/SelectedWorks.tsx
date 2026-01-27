@@ -1,42 +1,49 @@
 import { useEffect, useRef, useState } from 'react'
 
-type Work = {
+type Project = {
   id: number
   title: string
+  category: string
   description: string
   image: string
 }
 
-const works: Work[] = [
+const projects: Project[] = [
   {
     id: 1,
-    title: 'Brand Identity',
+    title: 'E-commerce Platform Redesign',
+    category: 'Web Development',
     description:
-      'Cohesive visual identities that capture the essence of a brand—combining logos, color palettes, typography, and design systems to create a consistent look and feel that builds recognition and trust.',
+      'Complete redesign and development of a modern e-commerce platform with improved user experience, payment integration, and mobile optimization.',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
   },
   {
     id: 2,
-    title: 'UIUX',
+    title: 'Digital Brand Campaign',
+    category: 'Art Direction',
     description:
-      'Intuitive, user-focused interfaces that blend functionality with seamless experiences.',
+      'Comprehensive art direction for a multi-channel brand campaign across digital, print, and social media platforms.',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
   },
   {
     id: 3,
-    title: 'Web Development',
-    description: 'Responsive, efficient websites that bring ideas to life online.',
+    title: 'SaaS Product Identity',
+    category: 'Brand Guidelines',
+    description:
+      'Development of complete brand guidelines and visual identity system for a B2B SaaS product launch.',
     image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop',
   },
   {
     id: 4,
-    title: 'Illustration',
-    description: 'Unique visuals that add personality and storytelling to your brand.',
+    title: 'Startup Creative Direction',
+    category: 'Creative Consultancy',
+    description:
+      'Strategic creative direction and brand consulting for an early-stage startup from concept to market launch.',
     image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&h=600&fit=crop',
   },
 ]
 
-const FeaturedWorks = () => {
+const SelectedWorks = () => {
   const containerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const titleContainerRef = useRef<HTMLDivElement>(null)
@@ -85,27 +92,28 @@ const FeaturedWorks = () => {
 
   if (isMobile) {
     return (
-      <section id="works" ref={containerRef} className="relative transition-colors duration-700 bg-white text-black dark:bg-black dark:text-white" style={{ height: '300vh' }}>
+      <section id="selected-works" ref={containerRef} className="relative transition-colors duration-700 bg-white text-black dark:bg-black dark:text-white" style={{ height: '300vh' }}>
         <div className="sticky top-0 h-screen flex items-center overflow-hidden bg-transparent">
           <div className="px-5 sm:px-8 w-full h-full flex flex-col justify-center">
             <div className="mb-8 sm:mb-10">
-              <h2 className="text-3xl sm:text-4xl font-helvetica font-bold uppercase tracking-tight">Services</h2>
+              <h2 className="text-3xl sm:text-4xl font-helvetica font-bold uppercase tracking-tight">Selected Works</h2>
             </div>
 
             <div ref={scrollContainerRef} className="flex gap-6 sm:gap-8 transition-transform duration-100 ease-out will-change-transform" style={{ willChange: 'transform' }}>
-              {works.map((work) => (
+              {projects.map((project) => (
                 <article
-                  key={work.id}
+                  key={project.id}
                   className="snap-center flex-shrink-0 w-[85vw] sm:w-[70vw] max-w-sm px-6 py-10 sm:px-8 sm:py-12 flex flex-col gap-4 sm:gap-6"
                 >
                   <div className="flex flex-col gap-1">
-                    <h3 className="text-2xl sm:text-3xl font-helvetica font-bold uppercase leading-snug">{work.title}</h3>
+                    <p className="text-xs uppercase tracking-[0.08em] text-gray-500 dark:text-gray-400">{project.category}</p>
+                    <h3 className="text-2xl sm:text-3xl font-helvetica font-bold uppercase leading-snug">{project.title}</h3>
                   </div>
 
-                  <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">{work.description}</p>
+                  <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">{project.description}</p>
 
                   <div className="mt-auto overflow-hidden">
-                    <img src={work.image} alt={work.title} className="w-full h-52 sm:h-64 object-cover" loading="lazy" />
+                    <img src={project.image} alt={project.title} className="w-full h-52 sm:h-64 object-cover" loading="lazy" />
                   </div>
                 </article>
               ))}
@@ -117,7 +125,7 @@ const FeaturedWorks = () => {
   }
 
   return (
-    <section id="works" ref={containerRef} className="relative transition-colors duration-700 bg-white text-black dark:bg-black dark:text-white" style={{ height: '300vh' }}>
+    <section id="selected-works" ref={containerRef} className="relative transition-colors duration-700 bg-white text-black dark:bg-black dark:text-white" style={{ height: '300vh' }}>
       <div className="sticky top-0 h-screen flex items-center overflow-hidden bg-transparent">
         <div className="relative w-full h-full flex items-center">
           <div
@@ -125,14 +133,14 @@ const FeaturedWorks = () => {
             className="pointer-events-none absolute left-0 top-0 h-full w-full flex gap-8 px-6 z-30"
             style={{ willChange: 'transform' }}
           >
-            {works.map((work) => (
-              <div key={work.id} className="flex-shrink-0 w-[90vw] md:w-[70vw] h-[70vh] flex items-center" style={{ scrollSnapAlign: 'center' }}>
+            {projects.map((project) => (
+              <div key={project.id} className="flex-shrink-0 w-[90vw] md:w-[70vw] h-[70vh] flex items-center" style={{ scrollSnapAlign: 'center' }}>
                 <div className="w-1/3 md:w-1/3 flex items-start justify-start relative z-30 overflow-visible h-full">
                   <h3
                     className="text-xl sm:text-2xl md:text-5xl lg:text-6xl font-merriweather font-normal leading-tight uppercase transition-colors duration-700 drop-shadow-lg"
                     style={{ position: 'relative', zIndex: 30, pointerEvents: 'auto', willChange: 'transform' }}
                   >
-                    {work.title}
+                    {project.title}
                   </h3>
                 </div>
               </div>
@@ -140,16 +148,16 @@ const FeaturedWorks = () => {
           </div>
 
           <div ref={scrollContainerRef} className="flex gap-8 px-6 transition-transform duration-100 ease-out will-change-transform">
-            {works.map((work) => (
-              <div key={work.id} className="flex-shrink-0 w-[80vw] md:w-[70vw] h-[70vh] group cursor-pointer" style={{ scrollSnapAlign: 'center' }}>
+            {projects.map((project) => (
+              <div key={project.id} className="flex-shrink-0 w-[80vw] md:w-[70vw] h-[70vh] group cursor-pointer" style={{ scrollSnapAlign: 'center' }}>
                 <div className="w-full h-full flex overflow-hidden p-3 sm:p-4 md:p-8 gap-3 sm:gap-4 md:gap-8 transition-colors duration-700">
                   <div className="w-1/4 md:w-1/3 flex flex-col justify-center h-full">
-                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed pr-4 hidden md:block">{work.description}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed pr-4 hidden md:block">{project.description}</p>
                   </div>
 
                   <div className="w-3/4 md:w-2/3 flex items-center justify-center relative z-10">
                     <div className="w-full h-full relative overflow-hidden">
-                      <img src={work.image} alt={work.title} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                      <img src={project.image} alt={project.title} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
                     </div>
                   </div>
                 </div>
@@ -162,4 +170,4 @@ const FeaturedWorks = () => {
   )
 }
 
-export default FeaturedWorks
+export default SelectedWorks
