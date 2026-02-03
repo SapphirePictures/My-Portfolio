@@ -6,13 +6,6 @@ const Hero = () => {
   const [hasAnimated, setHasAnimated] = useState(false)
   const [descriptionVisible, setDescriptionVisible] = useState(false)
 
-  const scrollToWorks = () => {
-    const element = document.getElementById('works')
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-
   useEffect(() => {
     const handleScroll = () => {
       if (taglineRef.current && !hasAnimated) {

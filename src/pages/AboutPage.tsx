@@ -48,21 +48,11 @@ const AboutPage = () => {
     <div className="min-h-screen bg-white dark:bg-black">
       <Navbar isDarkMode={false} />
       <section ref={sectionRef} className="relative min-h-screen bg-white dark:bg-black overflow-hidden">
-        {/* Background Title */}
-        <div className="absolute inset-x-0 top-6 pointer-events-none select-none">
-          <h1
-            className="text-[18vw] sm:text-[16vw] md:text-[14vw] lg:text-[12vw] xl:text-[10vw] font-garnet text-blue-600 dark:text-blue-500 leading-none tracking-tighter uppercase whitespace-nowrap"
-            style={{ lineHeight: 0.85 }}
-          >
-            ABOUT ME
-          </h1>
-        </div>
-
         {/* Content layer */}
         <div className="relative z-10 px-6 md:px-8 lg:px-12 pt-24 md:pt-28">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-            {/* Floating Name */}
-            <div className="md:col-span-6">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            {/* Name */}
+            <div>
               <h2
                 ref={nameRef}
                 className="text-blue-600 dark:text-blue-500 text-5xl md:text-6xl lg:text-7xl font-helvetica font-bold uppercase tracking-tight"
@@ -73,11 +63,11 @@ const AboutPage = () => {
             </div>
 
             {/* Portrait Image */}
-            <div className="md:col-span-6 flex justify-center md:justify-end">
+            <div className="flex justify-center md:justify-end -mr-20 md:-mr-40 lg:-mr-56">
               <img
                 src="/assets/about/PNG.png"
                 alt="Portrait of Wesley"
-                className="w-[85%] md:w-[100%] max-w-[900px] object-contain"
+                className="w-full md:w-full md:max-w-5xl h-auto object-contain"
                 style={{ filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.25))' }}
               />
             </div>

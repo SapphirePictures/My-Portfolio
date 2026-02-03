@@ -15,14 +15,7 @@ function App() {
     const lenis = new Lenis({
       duration: 1.0,
       easing: (t) => 1 - Math.pow(1 - t, 4), // Quartic ease-out
-      direction: 'vertical',
-      smooth: true,
-      smoothTouch: false,
-      touchMultiplier: 2,
-      wheelMultiplier: 0.8,
-      infinite: false,
-      lerp: 0.05, // Very smooth interpolation
-    })
+    } as any)
 
     // Animation frame loop
     function raf(time: number) {
