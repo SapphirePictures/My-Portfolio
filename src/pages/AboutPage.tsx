@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import Navbar from '../components/Navbar'
 
 const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max)
 
@@ -25,9 +27,8 @@ const AboutPage = () => {
       if (!section || !nameRef.current) return
       const rect = section.getBoundingClientRect()
       const viewportH = window.innerHeight
-      const progress = clamp(1 - rect.top / viewportH, -1, 2) // a range that keeps moving across scroll
-      // Map progress to a vertical translation. Repeat feel via continuous linkage to scroll.
-      const offset = clamp(progress * 80, -120, 120) // px
+      const progress = clamp(1 - rect.top / viewportH, -1, 2)
+      const offset = clamp(progress * 80, -120, 120)
       nameRef.current.style.transform = `translateY(${offset}px)`
     }
 
@@ -44,64 +45,84 @@ const AboutPage = () => {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative min-h-screen bg-white dark:bg-black overflow-hidden">
-      {/* Background Title */}
-      <div className="absolute inset-x-0 top-6 pointer-events-none select-none">
-        <h1
-          className="text-[18vw] sm:text-[16vw] md:text-[14vw] lg:text-[12vw] xl:text-[10vw] font-garnet text-blue-600 dark:text-blue-500 leading-none tracking-tighter uppercase whitespace-nowrap"
-          style={{ lineHeight: 0.85 }}
-        >
-          ABOUT ME
-        </h1>
-      </div>
-
-      {/* Content layer */}
-      <div className="relative z-10 px-6 md:px-8 lg:px-12 pt-24 md:pt-28">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-          {/* Floating Name */}
-          <div className="md:col-span-6">
-            <h2
-              ref={nameRef}
-              className="text-blue-600 dark:text-blue-500 text-5xl md:text-6xl lg:text-7xl font-helvetica font-bold uppercase tracking-tight"
-              style={{ transform: 'translateY(0px)', transition: isInView ? 'transform 0.1s linear' : 'none' }}
-            >
-              WESLEY OJEDAPO
-            </h2>
-          </div>
-
-          {/* Portrait Image */}
-          <div className="md:col-span-6 flex justify-center md:justify-end">
-            <img
-              src="/assets/about/portrait.png"
-              alt="Portrait of Wesley"
-              className="w-[85%] md:w-[100%] max-w-[900px] object-contain"
-              style={{ filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.25))' }}
-            />
-          </div>
+    <div className="min-h-screen bg-white dark:bg-black">
+      <Navbar isDarkMode={false} />
+      <section ref={sectionRef} className="relative min-h-screen bg-white dark:bg-black overflow-hidden">
+        {/* Background Title */}
+        <div className="absolute inset-x-0 top-6 pointer-events-none select-none">
+          <h1
+            className="text-[18vw] sm:text-[16vw] md:text-[14vw] lg:text-[12vw] xl:text-[10vw] font-garnet text-blue-600 dark:text-blue-500 leading-none tracking-tighter uppercase whitespace-nowrap"
+            style={{ lineHeight: 0.85 }}
+          >
+            ABOUT ME
+          </h1>
         </div>
 
-        {/* CTA Button bottom-right */}
-        <div className="relative mt-12">
-          <div className="flex justify-end">
-            <a
-              href="#about-details"
-              className="inline-flex items-center justify-center px-8 py-6 bg-blue-600 text-white text-2xl rounded-none font-helvetica hover:bg-blue-700 transition-colors"
-            >
-              Get to know Me
-            </a>
+        {/* Content layer */}
+        <div className="relative z-10 px-6 md:px-8 lg:px-12 pt-24 md:pt-28">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            {/* Floating Name */}
+            <div className="md:col-span-6">
+              <h2
+                ref={nameRef}
+                className="text-blue-600 dark:text-blue-500 text-5xl md:text-6xl lg:text-7xl font-helvetica font-bold uppercase tracking-tight"
+                style={{ transform: 'translateY(0px)', transition: isInView ? 'transform 0.1s linear' : 'none' }}
+              >
+                WESLEY OJEDAPO
+              </h2>
+            </div>
+
+            {/* Portrait Image */}
+            <div className="md:col-span-6 flex justify-center md:justify-end">
+              <img
+                src="/assets/about/PNG.png"
+                alt="Portrait of Wesley"
+                className="w-[85%] md:w-[100%] max-w-[900px] object-contain"
+                style={{ filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.25))' }}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Details anchor for CTA target (optional placeholder) */}
-      <div id="about-details" className="relative z-10 px-6 md:px-8 lg:px-12 py-16">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed font-helvetica">
-            I craft brand identities, clean interfaces, and expressive visuals for modern businesses. This page will include more about my background, approach, and values. (We can expand this with your copy.)
-          </p>
+        {/* Details section */}
+        <div id="about-details" className="relative z-10 px-6 md:px-8 lg:px-12 py-16">
+          <div className="max-w-4xl mx-auto">
+            <h3 className="text-3xl md:text-4xl font-helvetica font-bold text-blue-600 dark:text-blue-500 mb-8">About Wesley</h3>
+            <div className="space-y-6 text-gray-700 dark:text-gray-300 text-lg leading-relaxed font-helvetica">
+              <p>
+                I'm Wesley Ojedapo, a visual designer specializing in bold brand identities and clean, modern interfaces. 
+                My work bridges the gap between artistic expression and functional design, creating experiences that resonate 
+                with audiences and drive business success.
+              </p>
+              <p>
+                With a foundation in graphic design and a passion for visual storytelling, I've developed a unique approach 
+                that combines creative innovation with strategic thinking. Whether it's crafting a complete brand identity 
+                or designing intuitive user interfaces, I focus on creating work that is both aesthetically compelling and 
+                purposefully designed.
+              </p>
+              <p>
+                My process is collaborative and iterative, working closely with clients to understand their vision and 
+                translate it into visual solutions that exceed expectations. I believe great design is not just about 
+                making things look good—it's about solving problems, communicating messages, and creating meaningful connections.
+              </p>
+              <p>
+                When I'm not designing, you can find me exploring new creative techniques, staying current with design trends, 
+                and continuously refining my craft to deliver the best possible results for every project.
+              </p>
+            </div>
+            
+            <div className="mt-12">
+              <Link
+                to="/"
+                className="inline-flex items-center justify-center px-8 py-4 bg-blue-600 text-white text-xl rounded-none font-helvetica hover:bg-blue-700 transition-colors"
+              >
+                ← Back to Home
+              </Link>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   )
 }
 
