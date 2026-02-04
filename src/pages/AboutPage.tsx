@@ -1,82 +1,53 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import Lenis from 'lenis'
 import Navbar from '../components/Navbar'
 
-const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max)
-
 const AboutPage = () => {
-  const sectionRef = useRef<HTMLElement | null>(null)
-  const nameRef = useRef<HTMLHeadingElement | null>(null)
-  const [isInView, setIsInView] = useState(false)
-
   useEffect(() => {
-    const section = sectionRef.current
-    if (!section || !nameRef.current) return
+    // Initialize Lenis smooth scroll
+    const lenis = new Lenis({
+      duration: 1.0,
+      easing: (t) => 1 - Math.pow(1 - t, 4), // Quartic ease-out
+    } as any)
 
-    const observer = new IntersectionObserver(
-      entries => {
-        const entry = entries[0]
-        setIsInView(entry.isIntersecting)
-      },
-      { threshold: 0.1 }
-    )
-    observer.observe(section)
-
-    let rafId = 0
-    const onScroll = () => {
-      if (!section || !nameRef.current) return
-      const rect = section.getBoundingClientRect()
-      const viewportH = window.innerHeight
-      const progress = clamp(1 - rect.top / viewportH, -1, 2)
-      const offset = clamp(progress * 80, -120, 120)
-      nameRef.current.style.transform = `translateY(${offset}px)`
+    // Animation frame loop
+    function raf(time: number) {
+      lenis.raf(time)
+      requestAnimationFrame(raf)
     }
 
-    const loop = () => {
-      onScroll()
-      rafId = requestAnimationFrame(loop)
-    }
-    loop()
+    requestAnimationFrame(raf)
 
+    // Cleanup
     return () => {
-      observer.disconnect()
-      cancelAnimationFrame(rafId)
+      lenis.destroy()
     }
   }, [])
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       <Navbar isDarkMode={false} />
-      <section ref={sectionRef} className="relative min-h-screen bg-white dark:bg-black overflow-hidden">
-        {/* Content layer */}
-        <div className="relative z-10 px-6 md:px-8 lg:px-12 pt-24 md:pt-28">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            {/* Name */}
-            <div>
-              <h2
-                ref={nameRef}
-                className="text-blue-600 dark:text-blue-500 text-5xl md:text-6xl lg:text-7xl font-helvetica font-bold uppercase tracking-tight"
-                style={{ transform: 'translateY(0px)', transition: isInView ? 'transform 0.1s linear' : 'none' }}
-              >
-                WESLEY OJEDAPO
-              </h2>
-            </div>
-
-            {/* Portrait Image */}
-            <div className="flex justify-center md:justify-end -mr-20 md:-mr-40 lg:-mr-56">
-              <img
-                src="/assets/about/PNG.png"
-                alt="Portrait of Wesley"
-                className="w-full md:w-full md:max-w-5xl h-auto object-contain"
-                style={{ filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.25))' }}
-              />
-            </div>
-          </div>
+      
+      {/* Hero Banner */}
+      <section className="relative min-h-[60vh] md:min-h-[70vh] bg-gradient-to-b from-blue-600 to-blue-800 dark:from-blue-900 dark:to-black flex items-center justify-center overflow-hidden">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(68,_68,_68,_.2)_25%,rgba(68,_68,_68,_.2)_50%,transparent_50%,transparent_75%,rgba(68,_68,_68,_.2)_75%,rgba(68,_68,_68,_.2))] bg-[length:60px_60px]"></div>
         </div>
 
-        {/* Details section */}
-        <div id="about-details" className="relative z-10 px-6 md:px-8 lg:px-12 py-16">
-          <div className="max-w-4xl mx-auto">
+        <div className="relative z-10 text-center px-6 md:px-12">
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-helvetica font-bold text-white mb-6 uppercase tracking-tight">
+            Wesley Ojedapo
+          </h1>
+          <p className="text-xl md:text-2xl text-white/90 font-helvetica max-w-3xl mx-auto">
+            Visual Designer. Brand Strategist. Creative Problem Solver.
+          </p>
+        </div>
+      </section>
+      {/* About Details Section */}
+      <section className="bg-white dark:bg-black py-20 px-6 md:px-12">
+        <div className="max-w-4xl mx-auto">
             <h3 className="text-3xl md:text-4xl font-helvetica font-bold text-blue-600 dark:text-blue-500 mb-8">About Wesley</h3>
             <div className="space-y-6 text-gray-700 dark:text-gray-300 text-lg leading-relaxed font-helvetica">
               <p>
@@ -109,7 +80,6 @@ const AboutPage = () => {
                 ← Back to Home
               </Link>
             </div>
-          </div>
         </div>
       </section>
     </div>

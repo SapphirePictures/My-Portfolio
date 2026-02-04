@@ -1,46 +1,65 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { supabase } from '../lib/supabaseClient'
 
 type Work = {
-  id: number
+  id: string
   title: string
   description: string
   image: string
+  slug: string
 }
 
-const works: Work[] = [
-  {
-    id: 1,
-    title: 'Brand Identity',
-    description:
-      'Cohesive visual identities that capture the essence of a brand—combining logos, color palettes, typography, and design systems to create a consistent look and feel that builds recognition and trust.',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
-  },
-  {
-    id: 2,
-    title: 'UIUX',
-    description:
-      'Intuitive, user-focused interfaces that blend functionality with seamless experiences.',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
-  },
-  {
-    id: 3,
-    title: 'Web Development',
-    description: 'Responsive, efficient websites that bring ideas to life online.',
-    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop',
-  },
-  {
-    id: 4,
-    title: 'Illustration',
-    description: 'Unique visuals that add personality and storytelling to your brand.',
-    image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&h=600&fit=crop',
-  },
-]
+const getCategoryFromTags = (tags: string[] | null): string => {
+  if (!tags) return 'Featured'
+
+  const tagsLower = tags.map((tag) => tag.toLowerCase())
+  const categoryKeywords: Record<string, string[]> = {
+    'Brand Identity': ['branding', 'brand', 'identity', 'logo', 'visual identity'],
+    'UI/UX': ['ui', 'ux', 'interface', 'design', 'user experience', 'interaction'],
+    'Web Design': ['web', 'website', 'web design', 'web development', 'digital'],
+    'Illustration': ['illustration', 'art', 'drawing', 'artwork'],
+  }
+
+  for (const [category, keywords] of Object.entries(categoryKeywords)) {
+    if (keywords.some((keyword) => tagsLower.some((tag) => tag.includes(keyword)))) {
+      return category
+    }
+  }
+
+  return 'Featured'
+}
 
 const FeaturedWorks = () => {
   const containerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const titleContainerRef = useRef<HTMLDivElement>(null)
   const [isMobile, setIsMobile] = useState(false)
+  const [works, setWorks] = useState<Work[]>([])
+
+  useEffect(() => {
+    const loadFeaturedWorks = async () => {
+      const { data } = await supabase
+        .from('case_studies')
+        .select('*')
+        .eq('is_featured', true)
+        .order('created_at', { ascending: false })
+        .limit(4)
+
+      if (data) {
+        const mappedWorks: Work[] = data.map((study: any) => ({
+          id: study.id,
+          title: study.title,
+          description: study.summary || '',
+          image: study.cover_url || '',
+          slug: study.slug,
+        }))
+        setWorks(mappedWorks)
+      }
+    }
+
+    void loadFeaturedWorks()
+  }, [])
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)')
@@ -53,35 +72,50 @@ const FeaturedWorks = () => {
   useEffect(() => {
     const container = containerRef.current
     const scrollContainer = scrollContainerRef.current
-    if (!container || !scrollContainer) return
+    if (!container || !scrollContainer || works.length === 0) return
 
-    let ticking = false
+    // Small delay to ensure DOM is fully rendered
+    const timer = setTimeout(() => {
+      let ticking = false
 
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const rect = container.getBoundingClientRect()
-          if (rect.top <= 0 && rect.bottom >= window.innerHeight) {
-            const progress = Math.abs(rect.top) / (rect.height - window.innerHeight)
-            const eased = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2
-            const scrollWidth = scrollContainer.scrollWidth
-            const containerWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth
-            const maxScroll = scrollWidth - containerWidth
-            const target = eased * maxScroll
-            scrollContainer.style.transform = `translateX(-${target}px)`
-            if (titleContainerRef.current) {
-              titleContainerRef.current.style.transform = `translateX(-${target * 0.95}px) translateY(120px)`
+      const handleScroll = () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            const rect = container.getBoundingClientRect()
+            if (rect.top <= 0 && rect.bottom >= window.innerHeight) {
+              const progress = Math.abs(rect.top) / (rect.height - window.innerHeight)
+              const eased = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2
+              const scrollWidth = scrollContainer.scrollWidth
+              const containerWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth
+              const maxScroll = scrollWidth - containerWidth
+              const target = eased * maxScroll
+              scrollContainer.style.transform = `translateX(-${target}px)`
+              if (titleContainerRef.current) {
+                titleContainerRef.current.style.transform = `translateX(-${target * 0.95}px) translateY(120px)`
+              }
             }
-          }
-          ticking = false
-        })
-        ticking = true
+            ticking = false
+          })
+          ticking = true
+        }
       }
-    }
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+      window.addEventListener('scroll', handleScroll, { passive: true })
+      
+      // Trigger once on mount to set initial position
+      handleScroll()
+
+      return () => {
+        window.removeEventListener('scroll', handleScroll)
+      }
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [works])
+
+  if (works.length === 0) {
+    return null
+  }
 
   if (isMobile) {
     return (
@@ -94,8 +128,9 @@ const FeaturedWorks = () => {
 
             <div ref={scrollContainerRef} className="flex gap-6 sm:gap-8 transition-transform duration-100 ease-out will-change-transform" style={{ willChange: 'transform' }}>
               {works.map((work) => (
-                <article
+                <Link
                   key={work.id}
+                  to={`/case-studies/${work.slug}`}
                   className="snap-center flex-shrink-0 w-[85vw] sm:w-[70vw] max-w-sm px-6 py-10 sm:px-8 sm:py-12 flex flex-col gap-4 sm:gap-6"
                 >
                   <div className="flex flex-col gap-1">
@@ -107,7 +142,7 @@ const FeaturedWorks = () => {
                   <div className="mt-auto overflow-hidden">
                     <img src={work.image} alt={work.title} className="w-full h-52 sm:h-64 object-cover" loading="lazy" />
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           </div>
@@ -141,7 +176,7 @@ const FeaturedWorks = () => {
 
           <div ref={scrollContainerRef} className="flex gap-8 px-6 transition-transform duration-100 ease-out will-change-transform">
             {works.map((work) => (
-              <div key={work.id} className="flex-shrink-0 w-[80vw] md:w-[70vw] h-[70vh] group cursor-pointer" style={{ scrollSnapAlign: 'center' }}>
+              <Link key={work.id} to={`/case-studies/${work.slug}`} className="flex-shrink-0 w-[80vw] md:w-[70vw] h-[70vh] group cursor-pointer" style={{ scrollSnapAlign: 'center' }}>
                 <div className="w-full h-full flex overflow-hidden p-3 sm:p-4 md:p-8 gap-3 sm:gap-4 md:gap-8 transition-colors duration-700">
                   <div className="w-1/4 md:w-1/3 flex flex-col justify-center h-full">
                     <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed pr-4 hidden md:block">{work.description}</p>
@@ -153,7 +188,7 @@ const FeaturedWorks = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

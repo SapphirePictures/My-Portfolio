@@ -1,8 +1,9 @@
 
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const navItems = [
-	{ label: 'Works', id: 'works' },
+	{ label: 'Works', path: '/works' },
 	{ label: 'Services', id: 'services' },
 	{ label: 'About Me', id: 'about' },
 ];
@@ -20,6 +21,16 @@ const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {
 
 	const goToAbout = () => {
 		scrollToSection('about');
+	};
+
+	const handleNavClick = (item: typeof navItems[0]) => {
+		if ('path' in item) {
+			setMenuOpen(false);
+		} else if (item.id === 'about') {
+			goToAbout();
+		} else {
+			scrollToSection(item.id);
+		}
 	};
 
 	return (
@@ -45,14 +56,26 @@ const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {
 			>
 				<div className="flex flex-col items-center gap-12">
 					{navItems.map((item, idx) => (
-						<button
-							key={item.id}
-							onClick={() => item.id === 'about' ? goToAbout() : scrollToSection(item.id)}
-							className={`text-3xl font-helvetica text-black focus:outline-none transform transition-all duration-200 hover:text-blue-600 ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
-							style={{ transitionDelay: menuOpen ? `${idx * 100 + 100}ms` : '0ms' }}
-						>
-							{item.label}
-						</button>
+						<div key={idx}>
+							{'path' in item ? (
+								<Link
+									to={item.path}
+									onClick={() => handleNavClick(item)}
+									className={`text-3xl font-helvetica text-black focus:outline-none transform transition-all duration-200 hover:text-blue-600 block ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
+									style={{ transitionDelay: menuOpen ? `${idx * 100 + 100}ms` : '0ms' }}
+								>
+									{item.label}
+								</Link>
+							) : (
+								<button
+									onClick={() => handleNavClick(item)}
+									className={`text-3xl font-helvetica text-black focus:outline-none transform transition-all duration-200 hover:text-blue-600 ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
+									style={{ transitionDelay: menuOpen ? `${idx * 100 + 100}ms` : '0ms' }}
+								>
+									{item.label}
+								</button>
+							)}
+						</div>
 					))}
 					<button
 						onClick={() => scrollToSection('contact')}
@@ -76,4 +99,3 @@ const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {
 };
 
 export default Navbar;
-
