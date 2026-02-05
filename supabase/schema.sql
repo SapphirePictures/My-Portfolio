@@ -3,6 +3,7 @@ create table if not exists public.case_studies (
   title text not null,
   slug text not null unique,
   summary text,
+  featured_summary text,
   year text,
   role text,
   tags text[],

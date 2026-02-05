@@ -15,6 +15,7 @@ type CaseStudy = {
   title: string
   slug: string
   summary: string | null
+  featured_summary: string | null
   year: string | null
   role: string | null
   tags: string[] | null
@@ -39,6 +40,7 @@ export default function AdminDashboard() {
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [summary, setSummary] = useState('')
+  const [featuredSummary, setFeaturedSummary] = useState('')
   const [year, setYear] = useState('')
   const [role, setRole] = useState('')
   const [tags, setTags] = useState('')
@@ -198,6 +200,7 @@ export default function AdminDashboard() {
     setTitle('')
     setSlug('')
     setSummary('')
+    setFeaturedSummary('')
     setYear('')
     setRole('')
     setTags('')
@@ -214,6 +217,7 @@ export default function AdminDashboard() {
     setTitle(study.title)
     setSlug(study.slug)
     setSummary(study.summary || '')
+    setFeaturedSummary(study.featured_summary || '')
     setYear(study.year || '')
     setRole(study.role || '')
     setTags(study.tags?.join(', ') || '')
@@ -254,6 +258,7 @@ export default function AdminDashboard() {
           title,
           slug: slug || slugify(title),
           summary: summary || null,
+          featured_summary: featuredSummary || null,
           year: year || null,
           role: role || null,
           tags: tags
@@ -331,6 +336,7 @@ export default function AdminDashboard() {
           title,
           slug: slug || slugify(title),
           summary: summary || null,
+          featured_summary: featuredSummary || null,
           year: year || null,
           role: role || null,
           tags: tags
@@ -462,6 +468,16 @@ export default function AdminDashboard() {
                 onChange={(event) => setSummary(event.target.value)}
                 className="min-h-[120px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-white outline-none focus:border-white/30"
                 placeholder="Short overview of the project"
+              />
+            </label>
+
+            <label className="flex flex-col gap-2 text-sm">
+              Featured Summary (Homepage)
+              <textarea
+                value={featuredSummary}
+                onChange={(event) => setFeaturedSummary(event.target.value)}
+                className="min-h-[120px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-white outline-none focus:border-white/30"
+                placeholder="Short summary used on the homepage featured works"
               />
             </label>
 

@@ -36,6 +36,11 @@ const FeaturedWorks = () => {
   const titleContainerRef = useRef<HTMLDivElement>(null)
   const [isMobile, setIsMobile] = useState(false)
   const [works, setWorks] = useState<Work[]>([])
+  const manualOffsetRef = useRef(0)
+  const lastAutoTargetRef = useRef(0)
+  const isDraggingRef = useRef(false)
+  const dragStartXRef = useRef(0)
+  const dragStartOffsetRef = useRef(0)
 
   useEffect(() => {
     const loadFeaturedWorks = async () => {
@@ -50,7 +55,7 @@ const FeaturedWorks = () => {
         const mappedWorks: Work[] = data.map((study: any) => ({
           id: study.id,
           title: study.title,
-          description: study.summary || '',
+          description: study.featured_summary || study.summary || '',
           image: study.cover_url || '',
           slug: study.slug,
         }))
@@ -89,9 +94,11 @@ const FeaturedWorks = () => {
               const containerWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth
               const maxScroll = scrollWidth - containerWidth
               const target = eased * maxScroll
-              scrollContainer.style.transform = `translateX(-${target}px)`
+              lastAutoTargetRef.current = target
+              const combined = Math.min(Math.max(target + manualOffsetRef.current, 0), maxScroll)
+              scrollContainer.style.transform = `translateX(-${combined}px)`
               if (titleContainerRef.current) {
-                titleContainerRef.current.style.transform = `translateX(-${target * 0.95}px) translateY(120px)`
+                titleContainerRef.current.style.transform = `translateX(-${combined * 0.95}px) translateY(120px)`
               }
             }
             ticking = false
@@ -112,6 +119,54 @@ const FeaturedWorks = () => {
 
     return () => clearTimeout(timer)
   }, [works])
+
+  useEffect(() => {
+    if (!isMobile) return
+    const scrollContainer = scrollContainerRef.current
+    if (!scrollContainer) return
+
+    const handleTouchStart = (event: TouchEvent) => {
+      if (event.touches.length === 0) return
+      isDraggingRef.current = true
+      dragStartXRef.current = event.touches[0].clientX
+      dragStartOffsetRef.current = manualOffsetRef.current
+    }
+
+    const handleTouchMove = (event: TouchEvent) => {
+      if (!isDraggingRef.current || event.touches.length === 0) return
+      const delta = dragStartXRef.current - event.touches[0].clientX
+      const scrollWidth = scrollContainer.scrollWidth
+      const containerWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth
+      const maxScroll = scrollWidth - containerWidth
+      const autoTarget = lastAutoTargetRef.current
+      const minOffset = -autoTarget
+      const maxOffset = maxScroll - autoTarget
+      const nextOffset = Math.min(Math.max(dragStartOffsetRef.current + delta, minOffset), maxOffset)
+
+      manualOffsetRef.current = nextOffset
+      const combined = Math.min(Math.max(autoTarget + manualOffsetRef.current, 0), maxScroll)
+      scrollContainer.style.transform = `translateX(-${combined}px)`
+      if (titleContainerRef.current) {
+        titleContainerRef.current.style.transform = `translateX(-${combined * 0.95}px) translateY(120px)`
+      }
+    }
+
+    const handleTouchEnd = () => {
+      isDraggingRef.current = false
+    }
+
+    scrollContainer.addEventListener('touchstart', handleTouchStart, { passive: true })
+    scrollContainer.addEventListener('touchmove', handleTouchMove, { passive: true })
+    scrollContainer.addEventListener('touchend', handleTouchEnd, { passive: true })
+    scrollContainer.addEventListener('touchcancel', handleTouchEnd, { passive: true })
+
+    return () => {
+      scrollContainer.removeEventListener('touchstart', handleTouchStart)
+      scrollContainer.removeEventListener('touchmove', handleTouchMove)
+      scrollContainer.removeEventListener('touchend', handleTouchEnd)
+      scrollContainer.removeEventListener('touchcancel', handleTouchEnd)
+    }
+  }, [isMobile])
 
   if (works.length === 0) {
     return null

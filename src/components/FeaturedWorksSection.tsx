@@ -7,6 +7,7 @@ type CaseStudy = {
   title: string
   slug: string
   summary: string | null
+  featured_summary: string | null
   year: string | null
   role: string | null
   tags: string[] | null
@@ -88,7 +89,7 @@ export default function FeaturedWorksSection() {
                     </h2>
                     <div className="space-y-4">
                       <p className="text-base md:text-lg text-gray-300 leading-relaxed">
-                        {study.summary}
+                        {study.featured_summary || study.summary}
                       </p>
                       {study.year || study.role ? (
                         <div className="flex gap-4 text-sm text-gray-500 pt-4">
