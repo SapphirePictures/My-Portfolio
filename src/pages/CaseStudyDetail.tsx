@@ -25,11 +25,36 @@ type CaseStudy = {
   created_at: string
 }
 
+const getCategoryFromTags = (tags: string[] | null): string | null => {
+  if (!tags) return null
+
+  const tagsLower = tags.map((tag) => tag.toLowerCase())
+  const categoryKeywords: Record<string, string[]> = {
+    'brand-identity': ['branding', 'brand', 'identity', 'logo', 'visual identity'],
+    'ui-ux': ['ui', 'ux', 'interface', 'design', 'user experience', 'interaction'],
+    'web-design': ['web', 'website', 'web design', 'web development', 'digital'],
+    'illustration': ['illustration', 'art', 'drawing', 'artwork'],
+  }
+
+  for (const [category, keywords] of Object.entries(categoryKeywords)) {
+    if (keywords.some((keyword) => tagsLower.some((tag) => tag.includes(keyword) || keyword.includes(tag)))) {
+      return category
+    }
+  }
+
+  return null
+}
+
 export default function CaseStudyDetail() {
   const { slug } = useParams<{ slug: string }>()
   const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null)
+  const [categoryStudies, setCategoryStudies] = useState<CaseStudy[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [slug])
 
   useEffect(() => {
     const loadCaseStudy = async () => {
@@ -47,7 +72,25 @@ export default function CaseStudyDetail() {
       if (fetchError) {
         setError(fetchError.message)
       } else {
-        setCaseStudy(data as CaseStudy)
+        const study = data as CaseStudy
+        setCaseStudy(study)
+
+        // Load all studies in the same category
+        const category = getCategoryFromTags(study.tags)
+        if (category) {
+          const { data: allStudies } = await supabase
+            .from('case_studies')
+            .select('*')
+            .order('created_at', { ascending: false })
+
+          if (allStudies) {
+            const filtered = (allStudies as CaseStudy[]).filter((s) => {
+              const studyCategory = getCategoryFromTags(s.tags)
+              return studyCategory === category
+            })
+            setCategoryStudies(filtered)
+          }
+        }
       }
 
       setIsLoading(false)
@@ -101,9 +144,12 @@ export default function CaseStudyDetail() {
       {/* Header */}
       <header className="border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-6 py-12">
-          <Link to="/" className="text-sm text-gray-600 hover:text-gray-900 mb-6 inline-block">
+          <button 
+            onClick={() => window.history.back()} 
+            className="text-sm text-gray-600 hover:text-gray-900 mb-6 inline-block"
+          >
             ← Back
-          </Link>
+          </button>
           <h1 className="text-5xl font-bold mb-4">{caseStudy.title}</h1>
           {caseStudy.summary && <p className="text-xl text-gray-600">{caseStudy.summary}</p>}
 
@@ -183,10 +229,55 @@ export default function CaseStudyDetail() {
 
       {/* Footer */}
       <footer className="bg-gray-50 border-t border-gray-200 py-12">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <Link to="/" className="text-blue-600 hover:underline">
-            ← Back to portfolio
-          </Link>
+        <div className="max-w-4xl mx-auto px-6">
+          {/* Navigation to prev/next projects */}
+          {categoryStudies.length > 1 && (
+            <div className="mb-12">
+              <div className="flex items-center justify-between gap-4">
+                {(() => {
+                  const currentIndex = categoryStudies.findIndex((s) => s.slug === slug)
+                  const prevStudy = currentIndex > 0 ? categoryStudies[currentIndex - 1] : null
+                  const nextStudy = currentIndex < categoryStudies.length - 1 ? categoryStudies[currentIndex + 1] : null
+
+                  return (
+                    <>
+                      {prevStudy ? (
+                        <Link
+                          to={`/case-studies/${prevStudy.slug}`}
+                          className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                          <span>Previous Project</span>
+                        </Link>
+                      ) : (
+                        <div />
+                      )}
+                      <span className="text-gray-500 text-sm">
+                        {currentIndex + 1} of {categoryStudies.length}
+                      </span>
+                      {nextStudy ? (
+                        <Link
+                          to={`/case-studies/${nextStudy.slug}`}
+                          className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
+                        >
+                          <span>Next Project</span>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </Link>
+                      ) : (
+                        <div />
+                      )}
+                    </>
+                  )
+                })()}
+              </div>
+            </div>
+          )}
+
+
         </div>
       </footer>
     </article>

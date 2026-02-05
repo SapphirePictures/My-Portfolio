@@ -37,6 +37,10 @@ const slugify = (value: string) =>
 const bucketName = 'case-studies'
 
 export default function AdminDashboard() {
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [summary, setSummary] = useState('')

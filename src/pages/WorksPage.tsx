@@ -23,92 +23,76 @@ type CategoryGroup = {
   studies: CaseStudy[]
 }
 
-const categories = {
-  'Brand Identity': {
+const categories = [
+  {
+    slug: 'brand-identity',
     name: 'Brand Identity',
-    color: 'bg-blue-50',
-    keywords: ['branding', 'brand', 'identity', 'logo', 'visual identity'],
+    description: 'Visual identities, logos, and branding projects',
+    color: 'bg-blue-500',
   },
-  'UI/UX': {
+  {
+    slug: 'ui-ux',
     name: 'UI/UX',
-    color: 'bg-purple-50',
-    keywords: ['ui', 'ux', 'interface', 'design', 'user experience', 'interaction'],
+    description: 'User interface and experience design',
+    color: 'bg-purple-500',
   },
-  'Web Design': {
+  {
+    slug: 'web-design',
     name: 'Web Design',
-    color: 'bg-green-50',
-    keywords: ['web', 'website', 'web design', 'web development', 'digital'],
+    description: 'Website and digital design projects',
+    color: 'bg-green-500',
   },
-  'Illustration': {
+  {
+    slug: 'illustration',
     name: 'Illustration',
-    color: 'bg-pink-50',
-    keywords: ['illustration', 'art', 'drawing', 'artwork'],
+    description: 'Artwork, drawings, and illustrations',
+    color: 'bg-pink-500',
   },
-}
-
-const categorizeStudy = (study: CaseStudy): string[] => {
-  if (!study.tags || study.tags.length === 0) return []
-
-  const tagsLower = study.tags.map((tag) => tag.toLowerCase())
-  const foundCategories: string[] = []
-
-  for (const [categoryKey, categoryData] of Object.entries(categories)) {
-    if (
-      categoryData.keywords.some((keyword) =>
-        tagsLower.some((tag) => tag.includes(keyword) || keyword.includes(tag))
-      )
-    ) {
-      foundCategories.push(categoryKey)
-    }
-  }
-
-  return foundCategories.length > 0 ? foundCategories : []
-}
+]
 
 export default function WorksPage() {
-  const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([])
-  const [groupedStudies, setGroupedStudies] = useState<Record<string, CaseStudy[]>>({})
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [categoryImages, setCategoryImages] = useState<Record<string, string>>({})
 
   useEffect(() => {
-    const loadCaseStudies = async () => {
-      setIsLoading(true)
-      setError(null)
+    window.scrollTo(0, 0)
+  }, [])
 
-      const { data, error: fetchError } = await supabase
+  useEffect(() => {
+    const loadCategoryImages = async () => {
+      const { data } = await supabase
         .from('case_studies')
         .select('*')
         .order('created_at', { ascending: false })
 
-      if (fetchError) {
-        setError(fetchError.message)
-      } else {
-        const studies = (data as CaseStudy[]) ?? []
-        setCaseStudies(studies)
+      if (data) {
+        const images: Record<string, string> = {}
+        const categoryKeywords: Record<string, string[]> = {
+          'brand-identity': ['branding', 'brand', 'identity', 'logo', 'visual identity'],
+          'ui-ux': ['ui', 'ux', 'interface', 'design', 'user experience', 'interaction'],
+          'web-design': ['web', 'website', 'web design', 'web development', 'digital'],
+          'illustration': ['illustration', 'art', 'drawing', 'artwork'],
+        }
 
-        // Group studies by category
-        const grouped: Record<string, CaseStudy[]> = {}
-        Object.keys(categories).forEach((cat) => {
-          grouped[cat] = []
-        })
-
-        studies.forEach((study) => {
-          const assignedCategories = categorizeStudy(study)
-          if (assignedCategories.length > 0) {
-            assignedCategories.forEach((cat) => {
-              grouped[cat].push(study)
+        Object.entries(categoryKeywords).forEach(([catSlug, keywords]) => {
+          if (!images[catSlug]) {
+            const study = (data as CaseStudy[]).find((s) => {
+              if (!s.tags) return false
+              const tagsLower = s.tags.map((tag) => tag.toLowerCase())
+              return keywords.some((keyword) =>
+                tagsLower.some((tag) => tag.includes(keyword) || keyword.includes(tag))
+              )
             })
+            if (study?.cover_url) {
+              images[catSlug] = study.cover_url
+            }
           }
         })
 
-        setGroupedStudies(grouped)
+        setCategoryImages(images)
       }
-
-      setIsLoading(false)
     }
 
-    void loadCaseStudies()
+    void loadCategoryImages()
   }, [])
 
   useEffect(() => {
@@ -132,22 +116,6 @@ export default function WorksPage() {
     }
   }, [])
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div>Loading works...</div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-red-600">Failed to load works: {error}</div>
-      </div>
-    )
-  }
-
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -165,77 +133,49 @@ export default function WorksPage() {
 
       {/* Categories */}
       <main className="max-w-7xl mx-auto px-6 py-20">
-        {Object.entries(categories).map(([key, categoryInfo]) => {
-          const studies = groupedStudies[key] ?? []
-
-          if (studies.length === 0) return null
-
-          return (
-            <section key={key} className="mb-20">
-              <h2 className="text-3xl md:text-4xl font-bold mb-12">{categoryInfo.name}</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {studies.map((study) => (
-                  <Link
-                    key={study.id}
-                    to={`/case-studies/${study.slug}`}
-                    className="group cursor-pointer"
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {categories.map((category) => (
+            <Link
+              key={category.slug}
+              to={`/works/${category.slug}`}
+              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-gray-900 to-gray-800 p-12 hover:shadow-2xl transition-all duration-300 min-h-96 flex flex-col justify-end"
+            >
+              {/* Background Image */}
+              {categoryImages[category.slug] && (
+                <div className="absolute inset-0 overflow-hidden">
+                  <img
+                    src={categoryImages[category.slug]}
+                    alt={category.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
+                </div>
+              )}
+              <div className={`absolute inset-0 ${category.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+              
+              <div className="relative z-10">
+                <h2 className="text-4xl font-bold text-white mb-3">
+                  {category.name}
+                </h2>
+                <p className="text-gray-300 text-lg">
+                  {category.description}
+                </p>
+                
+                <div className="mt-8 flex items-center text-white">
+                  <span className="text-sm font-medium">View Projects</span>
+                  <svg 
+                    className="ml-2 w-5 h-5 transform group-hover:translate-x-2 transition-transform duration-300" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
                   >
-                    <div className="mb-4 overflow-hidden rounded bg-gray-200">
-                      {study.cover_url ? (
-                        <img
-                          src={study.cover_url}
-                          alt={study.title}
-                          className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="h-64 w-full bg-gray-300 flex items-center justify-center text-gray-500">
-                          No cover image
-                        </div>
-                      )}
-                    </div>
-
-                    <div>
-                      <h3 className="text-xl font-semibold mb-2 group-hover:underline">
-                        {study.title}
-                      </h3>
-                      {study.summary && (
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{study.summary}</p>
-                      )}
-
-                      <div className="flex items-center justify-between text-sm text-gray-500">
-                        <div>
-                          {study.year && <span>{study.year}</span>}
-                          {study.year && study.role && <span className="mx-2">•</span>}
-                          {study.role && <span>{study.role}</span>}
-                        </div>
-                      </div>
-
-                      {study.tags && study.tags.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {study.tags.slice(0, 2).map((tag, index) => (
-                            <span
-                              key={index}
-                              className="inline-block text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </Link>
-                ))}
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
               </div>
-            </section>
-          )
-        })}
-
-        {Object.values(groupedStudies).every((studies) => studies.length === 0) && (
-          <div className="text-center py-20">
-            <p className="text-gray-600">No works yet.</p>
-          </div>
-        )}
+            </Link>
+          ))}
+        </div>
       </main>
     </div>
   )

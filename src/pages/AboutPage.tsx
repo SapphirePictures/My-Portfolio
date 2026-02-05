@@ -5,6 +5,10 @@ import Navbar from '../components/Navbar'
 
 const AboutPage = () => {
   useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
     // Initialize Lenis smooth scroll
     const lenis = new Lenis({
       duration: 1.0,

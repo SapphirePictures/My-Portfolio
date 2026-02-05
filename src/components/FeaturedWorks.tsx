@@ -140,7 +140,7 @@ const FeaturedWorks = () => {
     const scrollContainer = scrollContainerRef.current
     if (!scrollContainer) return
 
-    const delta = dragStartXRef.current - event.clientX
+    const delta = (dragStartXRef.current - event.clientX) * 0.35 // Smoother drag sensitivity
     const scrollWidth = scrollContainer.scrollWidth
     const containerWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth
     const maxScroll = scrollWidth - containerWidth
