@@ -161,6 +161,42 @@ const FeaturedWorks = () => {
     if (dragPointerIdRef.current !== event.pointerId) return
     isDraggingRef.current = false
     dragPointerIdRef.current = null
+
+    // Snap to nearest card
+    const scrollContainer = scrollContainerRef.current
+    if (!scrollContainer) return
+
+    const containerWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth
+    const cardWidth = containerWidth * 0.85 // matches w-[85vw]
+    const gap = 24 // matches gap-6 (1.5rem = 24px)
+    const cardPlusGap = cardWidth + gap
+    
+    const scrollWidth = scrollContainer.scrollWidth
+    const maxScroll = scrollWidth - containerWidth
+    const autoTarget = lastAutoTargetRef.current
+    const combined = Math.min(Math.max(autoTarget + manualOffsetRef.current, 0), maxScroll)
+    
+    // Find nearest snap point
+    const nearestIndex = Math.round(combined / cardPlusGap)
+    const snapPosition = nearestIndex * cardPlusGap
+    const clampedSnap = Math.min(Math.max(snapPosition, 0), maxScroll)
+    
+    // Update manual offset to match snap position
+    manualOffsetRef.current = clampedSnap - autoTarget
+    
+    // Animate to snap position
+    scrollContainer.style.transition = 'transform 0.3s ease-out'
+    scrollContainer.style.transform = `translateX(-${clampedSnap}px)`
+    if (titleContainerRef.current) {
+      titleContainerRef.current.style.transition = 'transform 0.3s ease-out'
+      titleContainerRef.current.style.transform = `translateX(-${clampedSnap * 0.95}px) translateY(120px)`
+    }
+    
+    // Remove transition after animation
+    setTimeout(() => {
+      if (scrollContainer) scrollContainer.style.transition = ''
+      if (titleContainerRef.current) titleContainerRef.current.style.transition = ''
+    }, 300)
   }
 
   if (works.length === 0) {
