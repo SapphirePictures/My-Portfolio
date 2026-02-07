@@ -48,6 +48,7 @@ const FeaturedWorks = () => {
   const titleContainerRef = useRef<HTMLDivElement>(null)
   const [isMobile, setIsMobile] = useState(false)
   const [works, setWorks] = useState<Work[]>([])
+  const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const manualOffsetRef = useRef(0)
   const lastAutoTargetRef = useRef(0)
   const isDraggingRef = useRef(false)
@@ -210,6 +211,14 @@ const FeaturedWorks = () => {
     setTimeout(() => {
       if (scrollContainer) scrollContainer.style.transition = ''
       if (titleContainerRef.current) titleContainerRef.current.style.transition = ''
+      
+      // Update current card index based on snap position
+      const containerWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth
+      const cardWidth = containerWidth * 0.85
+      const gap = 24
+      const cardPlusGap = cardWidth + gap
+      const nearestIndex = Math.round(clampedSnap / cardPlusGap)
+      setCurrentCardIndex(Math.min(nearestIndex, works.length - 1))
     }, 300)
   }
 
@@ -223,7 +232,7 @@ const FeaturedWorks = () => {
         <div className="sticky top-0 h-screen flex items-center overflow-hidden bg-transparent">
           <div className="px-5 sm:px-8 w-full h-full flex flex-col justify-center">
             <div className="mb-8 sm:mb-10">
-              <h2 className="text-3xl sm:text-4xl font-helvetica font-bold uppercase tracking-tight">Selected Works</h2>
+              <h2 className="text-sm md:text-base font-helvetica font-normal text-gray-900 dark:text-gray-100 tracking-wide uppercase">Selected Works</h2>
             </div>
 
             <div
@@ -232,7 +241,7 @@ const FeaturedWorks = () => {
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerUp}
-              className="flex gap-6 sm:gap-8 transition-transform duration-100 ease-out will-change-transform"
+              className="flex gap-6 sm:gap-8 transition-transform duration-100 ease-out will-change-transform overflow-x-hidden"
               style={{ willChange: 'transform', touchAction: 'pan-y' }}
             >
               {works.map((work) => (
@@ -266,6 +275,20 @@ const FeaturedWorks = () => {
                     <img src={work.image} alt={work.title} className="w-full h-52 sm:h-64 object-cover" loading="lazy" />
                   </div>
                 </Link>
+              ))}
+            </div>
+
+            {/* Dot Indicators */}
+            <div className="flex justify-center gap-2 mt-8">
+              {works.map((_, index) => (
+                <div
+                  key={index}
+                  className={`transition-all duration-300 rounded-full ${
+                    index === currentCardIndex
+                      ? 'w-8 h-2 bg-gray-900 dark:bg-white'
+                      : 'w-2 h-2 bg-gray-400 dark:bg-gray-600'
+                  }`}
+                />
               ))}
             </div>
           </div>
