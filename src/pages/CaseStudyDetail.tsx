@@ -106,7 +106,7 @@ export default function CaseStudyDetail() {
     // Initialize Lenis smooth scroll
     const lenis = new Lenis({
       duration: 1.0,
-      easing: (t) => 1 - Math.pow(1 - t, 4), // Quartic ease-out
+      easing: (t: number) => 1 - Math.pow(1 - t, 4), // Quartic ease-out
     } as any)
 
     // Animation frame loop

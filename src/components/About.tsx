@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 
 const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max)
@@ -6,16 +6,15 @@ const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, 
 const About = () => {
   const sectionRef = useRef<HTMLElement | null>(null)
   const nameRef = useRef<HTMLHeadingElement | null>(null)
-  const [isInView, setIsInView] = useState(false)
+  // const [isInView, setIsInView] = useState(false)
 
   useEffect(() => {
     const section = sectionRef.current
     if (!section || !nameRef.current) return
 
     const observer = new IntersectionObserver(
-      entries => {
-        const entry = entries[0]
-        setIsInView(entry.isIntersecting)
+      () => {
+        // Observer for intersection monitoring
       },
       { threshold: 0.1 }
     )
