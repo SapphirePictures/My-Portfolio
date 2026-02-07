@@ -73,13 +73,16 @@ const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {
 				</div>
 			</nav>
 
-			{/* Overlay Menu - Only render when open */}
-			{menuOpen && (
-				<div
-					className="fixed inset-0 bg-[#f1f1f4] flex flex-col items-center z-30 transition-transform transition-opacity duration-500 ease-in-out translate-y-0 opacity-100 pointer-events-auto"
-					style={{ justifyContent: 'center' }}
-					onClick={() => setMenuOpen(false)}
-				>
+			{/* Overlay Menu - Always in DOM for transitions */}
+			<div
+				className={`fixed inset-0 bg-[#f1f1f4] flex flex-col items-center z-30 transition-all duration-500 ease-in-out ${
+					menuOpen 
+						? 'translate-y-0 opacity-100 pointer-events-auto' 
+						: '-translate-y-full opacity-0 pointer-events-none'
+				}`}
+				style={{ justifyContent: 'center' }}
+				onClick={() => setMenuOpen(false)}
+			>
 					<div className="flex flex-col items-center gap-12 pointer-events-auto">
 						{navItems.map((item, idx) => (
 							<div key={idx}>
@@ -87,7 +90,7 @@ const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {
 									<Link
 										to={item.path || '/'}
 										onClick={() => handleNavClick(item)}
-										className={`text-3xl font-helvetica text-black focus:outline-none transform transition-all duration-200 hover:text-blue-600 block ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
+										className={`text-3xl font-helvetica text-black focus:outline-none transform transition-transform transition-opacity duration-500 hover:text-blue-600 block ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
 										style={{ transitionDelay: menuOpen ? `${idx * 100 + 100}ms` : '0ms' }}
 									>
 										{item.label}
@@ -95,7 +98,7 @@ const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {
 								) : (
 									<button
 										onClick={() => handleNavClick(item)}
-										className={`text-3xl font-helvetica text-black focus:outline-none transform transition-all duration-200 hover:text-blue-600 ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
+										className={`text-3xl font-helvetica text-black focus:outline-none transform transition-transform transition-opacity duration-500 hover:text-blue-600 ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
 										style={{ transitionDelay: menuOpen ? `${idx * 100 + 100}ms` : '0ms' }}
 									>
 										{item.label}
@@ -105,7 +108,7 @@ const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {
 						))}
 						<button
 							onClick={() => scrollToSection('contact')}
-							className={`mt-2 w-80 max-w-xs py-6 bg-blue-600 text-white text-2xl font-helvetica rounded-none focus:outline-none transform transition-all duration-200 hover:bg-blue-700 ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
+							className={`mt-2 w-80 max-w-xs py-6 border-2 border-blue-600 text-blue-600 text-2xl font-helvetica rounded-none focus:outline-none transform transition-transform transition-opacity duration-500 hover:bg-blue-600 hover:text-white ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
 							style={{ transitionDelay: menuOpen ? `${navItems.length * 100 + 100}ms` : '0ms' }}
 						>
 							Get in Touch
@@ -122,8 +125,7 @@ const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {
 					>
 						&times;
 					</button>
-				</div>
-			)}
+			</div>
 		</>
 	);
 };
