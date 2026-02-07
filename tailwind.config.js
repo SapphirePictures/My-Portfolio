@@ -9,7 +9,7 @@ export default {
     extend: {
       fontFamily: {
         'merriweather': ['Space Grotesk', 'sans-serif'],
-        'helvetica': ['Helvetica Neue', 'Arial', 'sans-serif'],
+        'helvetica': ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
         'garnet': ['Anton', 'Impact', 'Arial Black', 'sans-serif'],
       },
       keyframes: {

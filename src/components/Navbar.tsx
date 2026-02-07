@@ -58,9 +58,16 @@ const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {
 
 	return (
 		<>
-			<nav className="fixed top-0 left-0 right-0 z-40 bg-transparent">
-				{/* Hamburger Icon */}
-				<div className={`flex justify-end p-6 relative z-50 transition-opacity duration-300 ${menuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+			<nav className="fixed top-4 left-4 right-4 z-40 bg-white/40 dark:bg-black/20 backdrop-blur-md rounded-lg shadow-sm">
+				<div className={`flex items-center justify-between px-6 py-3.5 relative z-50 transition-opacity duration-300 ${menuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+					<Link
+						to="/"
+						className={`text-[20px] sm:text-[24px] md:text-[28px] font-helvetica font-bold tracking-normal ${isDarkMode ? 'text-white' : 'text-black'} transition-colors duration-300`}
+						aria-label="Sapphire Inc. home"
+					>
+						Sapphire Inc.
+					</Link>
+					{/* Hamburger Icon */}
 					<button
 						className="flex flex-col justify-center items-center w-10 h-10 focus:outline-none"
 						aria-label="Open menu"

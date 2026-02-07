@@ -34,22 +34,7 @@ const Hero = () => {
   }, [hasAnimated, descriptionVisible])
 
   return (
-    <section id="hero" className="min-h-screen">
-      {/* Top Section with Title */}
-      <div className="pt-32 pb-12 px-6">
-        <div className="w-full overflow-hidden">
-          <h1 
-            className="text-[18vw] sm:text-[16vw] md:text-[14vw] lg:text-[12vw] xl:text-[10vw] font-garnet text-blue-600 dark:text-blue-500 leading-none tracking-tighter uppercase whitespace-nowrap transition-colors duration-700"
-            style={{
-              animation: 'slideUp 0.6s ease-out forwards',
-              transform: 'translateY(100%)'
-            }}
-          >
-            SAPPHIRE INC.
-          </h1>
-        </div>
-      </div>
-
+    <section id="hero" className="min-h-screen pt-24">
       {/* Video Section with Tagline */}
       <div className="relative w-full h-[60vh] overflow-hidden bg-gradient-to-br from-white via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-500 transition-colors duration-700">
         {/* Video Background */}

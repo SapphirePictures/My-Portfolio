@@ -30,15 +30,15 @@ function App() {
     // Dark mode scroll detection
     const handleScroll = () => {
       const worksSection = document.getElementById('works')
-      const aboutSection = document.getElementById('about')
+      const servicesSection = document.getElementById('services')
       
-      if (worksSection && aboutSection) {
+      if (worksSection && servicesSection) {
         const worksTop = worksSection.offsetTop - 200
-        const aboutTop = aboutSection.offsetTop - 200
+        const servicesTop = servicesSection.offsetTop - 200
         const scrollPosition = window.scrollY
         
-        // Dark mode active between works start and about start
-        if (scrollPosition >= worksTop && scrollPosition < aboutTop) {
+        // Dark mode active only between works start and services start
+        if (scrollPosition >= worksTop && scrollPosition < servicesTop) {
           setIsDarkMode(true)
         } else {
           setIsDarkMode(false)

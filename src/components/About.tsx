@@ -44,100 +44,34 @@ const About = () => {
   }, [])
 
   return (
-    <section id="about" ref={sectionRef} className="relative min-h-screen bg-white dark:bg-black overflow-hidden px-6">
-      {/* Background Title */}
-      <div className="absolute inset-x-0 top-6 pointer-events-none select-none z-0">
-        <h1
-          className="text-[18vw] sm:text-[16vw] md:text-[14vw] lg:text-[12vw] xl:text-[10vw] font-helvetica font-extralight text-blue-600 dark:text-blue-500 leading-none uppercase whitespace-nowrap tracking-[0.02em]"
-          style={{ lineHeight: 0.85 }}
-        >
-          ABOUT ME
-        </h1>
-      </div>
+    <section id="about" ref={sectionRef} className="relative bg-white dark:bg-black overflow-hidden px-6 py-16 flex items-center justify-center">
+      {/* Content layer - faint background covers all elements */}
+      <div className="relative z-10 w-full max-w-7xl bg-gray-100 dark:bg-gray-900 px-8 md:px-12 py-12 rounded-lg">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 md:gap-12">
+          {/* Left: Title */}
+          <h2
+            className="text-2xl md:text-3xl lg:text-4xl font-helvetica font-bold text-blue-600 dark:text-blue-500 leading-tight tracking-tight max-w-sm flex-shrink-0"
+          >
+            Hi, I'm Wesley
+          </h2>
 
-      {/* Content layer */}
-      <div className="relative z-10 px-0 md:px-2 lg:px-6 pt-24 md:pt-28">
-        <div className="max-w-7xl mx-auto relative">
-          {/* Desktop/Tablet layout */}
-          <div className="hidden md:block">
-            {/* Floating Name on the left */}
-            <div className="w-1/2">
-              <h2
-                ref={nameRef}
-                className="text-blue-600 dark:text-blue-500 text-5xl md:text-6xl lg:text-7xl font-helvetica font-bold uppercase tracking-tight"
-                style={{ transform: 'translateY(0px)', transition: isInView ? 'transform 0.1s linear' : 'none' }}
-              >
-                WESLEY OJEDAPO
-              </h2>
+          {/* Middle: Description with constrained width */}
+          <p className="font-helvetica text-base md:text-lg text-gray-700 dark:text-gray-300 leading-relaxed max-w-xs flex-shrink-0">
+            Visual designer crafting bold brand identities and clean interfaces for modern businesses.
+          </p>
 
-              {/* CTA below the name on the left */}
-              <div className="mt-96">
-                <Link
-                  to="/about"
-                  className="inline-flex items-center justify-center px-12 py-7 bg-blue-600 text-white text-3xl rounded-none font-helvetica hover:bg-blue-700 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                  }}
-                >
-                  Get to know Me
-                </Link>
-              </div>
-
-              {/* Short description */}
-              <div className="absolute top-96 left-0 w-96">
-                <p className="font-helvetica text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-                  Visual designer crafting bold brand identities and clean interfaces for modern businesses.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile layout */}
-          <div className="md:hidden flex flex-col items-end text-left pr-0">
-            {/* Image bigger and shifted right */}
-            <div className="w-[120%] mb-8 ml-auto" style={{ marginRight: '-10%' }}>
-              <img
-                src="/assets/about/PNG.png"
-                alt="Portrait of Wesley"
-                className="w-full h-auto object-contain"
-                style={{ filter: 'drop-shadow(0 20px 50px rgba(0,0,0,0.25))' }}
-              />
-            </div>
-
-            {/* Description text */}
-            <div className="mb-8 max-w-xs w-full">
-              <p className="font-helvetica text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-                Visual Designer crafting bold brand identities and Visual Interfaces for modern business
-              </p>
-            </div>
-
-            {/* CTA button */}
-            <Link
-              to="/about"
-              className="inline-flex items-center justify-center px-12 py-6 bg-blue-600 text-white text-xl rounded-none font-helvetica hover:bg-blue-700 transition-colors w-full"
-              onClick={(e) => {
-                e.stopPropagation()
-              }}
-            >
-              Get to know Me
-            </Link>
-          </div>
-
-          {/* Portrait Image overlayed above the big title - large contained div (desktop/tablet only) */}
-          <div className="hidden md:block md:absolute md:right-0 md:top-6 lg:top-12 z-5 w-full md:w-auto pointer-events-none" style={{ height: '120vh' }}>
-            <div className="relative h-full w-full flex items-center justify-end">
-              <img
-                src="/assets/about/PNG.png"
-                alt="Portrait of Wesley"
-                className="h-full w-auto object-contain scale-125"
-                style={{ filter: 'drop-shadow(0 20px 50px rgba(0,0,0,0.25))', maxHeight: '120vh' }}
-              />
-            </div>
-          </div>
+          {/* Right: CTA button - blue outlined */}
+          <Link
+            to="/about"
+            className="inline-flex items-center justify-center px-6 py-3 border-2 border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-500 text-base rounded-lg font-helvetica hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500 dark:hover:text-white transition-all flex-shrink-0 whitespace-nowrap"
+            onClick={(e) => {
+              e.stopPropagation()
+            }}
+          >
+            Learn more
+          </Link>
         </div>
       </div>
-
-
     </section>
   )
 }
