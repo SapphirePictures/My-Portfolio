@@ -9,10 +9,12 @@ import AdminDashboard from './pages/AdminDashboard.tsx'
 import WorksPage from './pages/WorksPage.tsx'
 import CategoryPage from './pages/CategoryPage.tsx'
 import CaseStudyDetail from './pages/CaseStudyDetail.tsx'
+import RouteHistoryTracker from './components/RouteHistoryTracker.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
+      <RouteHistoryTracker />
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/about" element={<AboutPage />} />

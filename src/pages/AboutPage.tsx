@@ -1,9 +1,12 @@
-import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import Lenis from 'lenis'
 import Navbar from '../components/Navbar'
+import ScrollToTop from '../components/ScrollToTop'
 
 const AboutPage = () => {
+  const navigate = useNavigate()
+
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
@@ -77,15 +80,16 @@ const AboutPage = () => {
             </div>
             
             <div className="mt-12">
-              <Link
-                to="/"
+              <button
+                onClick={() => navigate('/')}
                 className="inline-flex items-center justify-center px-8 py-4 bg-blue-600 text-white text-xl rounded-none font-helvetica hover:bg-blue-700 transition-colors"
               >
                 ← Back to Home
-              </Link>
+              </button>
             </div>
         </div>
       </section>
+      <ScrollToTop />
     </div>
   )
 }

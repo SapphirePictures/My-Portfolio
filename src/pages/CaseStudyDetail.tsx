@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useNavigate, useParams, Link } from 'react-router-dom'
 import Lenis from 'lenis'
 import { supabase } from '../lib/supabaseClient'
+import Navbar from '../components/Navbar'
+import ScrollToTop from '../components/ScrollToTop'
 
 type ContentBlock = {
   id: string
@@ -46,6 +48,7 @@ const getCategoryFromTags = (tags: string[] | null): string | null => {
 }
 
 export default function CaseStudyDetail() {
+  const navigate = useNavigate()
   const { slug } = useParams<{ slug: string }>()
   const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null)
   const [categoryStudies, setCategoryStudies] = useState<CaseStudy[]>([])
@@ -141,20 +144,29 @@ export default function CaseStudyDetail() {
 
   return (
     <article className="min-h-screen bg-white">
+      <Navbar isDarkMode={false} />
       {/* Header */}
-      <header className="border-b border-gray-200">
+      <header className="border-b border-gray-200 pt-24">
         <div className="max-w-4xl mx-auto px-6 py-12">
-          <button 
-            onClick={() => window.history.back()} 
+          <button
+            onClick={() => {
+              // Determine the category from tags and navigate to it
+              const category = getCategoryFromTags(caseStudy.tags)
+              if (category) {
+                navigate(`/works/${category}`)
+              } else {
+                navigate('/works')
+              }
+            }}
             className="text-sm text-gray-600 hover:text-gray-900 mb-6 inline-block"
           >
-            ← Back
+            ← Back to Category
           </button>
-          <h1 className="text-5xl font-bold mb-4">{caseStudy.title}</h1>
-          {caseStudy.summary && <p className="text-xl text-gray-600">{caseStudy.summary}</p>}
+          <h1 className="text-6xl font-bold mb-6">{caseStudy.title}</h1>
+          {caseStudy.summary && <p className="text-2xl text-gray-600 leading-relaxed">{caseStudy.summary}</p>}
 
           {/* Meta */}
-          <div className="mt-8 flex flex-wrap gap-8 text-sm text-gray-600">
+          <div className="mt-8 flex flex-wrap gap-8 text-base text-gray-600">
             {caseStudy.year && (
               <div>
                 <span className="font-semibold text-gray-900">Year</span>
@@ -209,7 +221,7 @@ export default function CaseStudyDetail() {
               <div key={block.id}>
                 {block.type === 'text' ? (
                   <div className="prose prose-lg max-w-none">
-                    <p className="whitespace-pre-wrap text-gray-700 leading-relaxed">{block.text}</p>
+                    <p className="whitespace-pre-wrap text-gray-700 leading-relaxed text-lg">{block.text}</p>
                   </div>
                 ) : (
                   <div>
@@ -218,7 +230,7 @@ export default function CaseStudyDetail() {
                         <img src={block.url} alt={block.caption || `Block ${index}`} className="w-full h-auto" />
                       )}
                     </div>
-                    {block.caption && <p className="text-center text-gray-600 text-sm">{block.caption}</p>}
+                    {block.caption && <p className="text-center text-gray-600 text-lg">{block.caption}</p>}
                   </div>
                 )}
               </div>
@@ -280,6 +292,7 @@ export default function CaseStudyDetail() {
 
         </div>
       </footer>
+      <ScrollToTop />
     </article>
   )
 }

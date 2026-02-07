@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import Lenis from 'lenis'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -9,6 +10,7 @@ import Contact from './components/Contact'
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const location = useLocation()
 
   useEffect(() => {
     // Initialize Lenis smooth scroll
@@ -65,6 +67,18 @@ function App() {
       document.documentElement.classList.remove('dark')
     }
   }, [isDarkMode])
+
+  useEffect(() => {
+    if (!location.hash) return
+
+    const id = location.hash.replace('#', '')
+    const target = document.getElementById(id)
+    if (target) {
+      requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior: 'smooth' })
+      })
+    }
+  }, [location.hash])
 
   return (
     <div className="font-helvetica transition-colors duration-700" style={{ backgroundColor: isDarkMode ? '#000000' : '#ffffff' }}>

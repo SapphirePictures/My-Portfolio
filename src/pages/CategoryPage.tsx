@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import Lenis from 'lenis'
 import { supabase } from '../lib/supabaseClient'
+import Navbar from '../components/Navbar'
+import ScrollToTop from '../components/ScrollToTop'
 
 type CaseStudy = {
   id: string
@@ -41,6 +43,7 @@ export default function CategoryPage() {
   const [studies, setStudies] = useState<CaseStudy[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   const categoryInfo = category ? categories[category] : null
 
@@ -130,12 +133,16 @@ export default function CategoryPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Navbar isDarkMode={false} />
       {/* Header */}
-      <header className="border-b border-gray-200">
+      <header className="border-b border-gray-200 pt-24">
         <div className="max-w-7xl mx-auto px-6 py-16">
-          <Link to="/works" className="text-sm text-gray-600 hover:text-gray-900 mb-6 inline-block">
+          <button
+            onClick={() => navigate('/works')}
+            className="text-sm text-gray-600 hover:text-gray-900 mb-6 inline-block"
+          >
             ← Back to Works
-          </Link>
+          </button>
           <h1 className="text-5xl md:text-6xl font-bold mb-4">{categoryInfo.name}</h1>
           <p className="text-xl text-gray-600">
             {studies.length} {studies.length === 1 ? 'project' : 'projects'}
@@ -205,6 +212,7 @@ export default function CategoryPage() {
           </div>
         )}
       </main>
+      <ScrollToTop />
     </div>
   )
 }

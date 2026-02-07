@@ -275,17 +275,23 @@ export default function AdminDashboard() {
         if (coverFile) {
           const coverUrl = await uploadFile(coverFile, `${editingId}/cover-${coverFile.name}`)
           updates.cover_url = coverUrl
+        } else if (!coverPreview) {
+          // Cover was removed
+          updates.cover_url = null
         }
 
-        // Upload new gallery images if changed
+        // Always update gallery images (handles additions and deletions)
+        const galleryUrls: string[] = []
         if (galleryFiles.length > 0) {
-          const galleryUrls: string[] = []
           for (const file of galleryFiles) {
             const url = await uploadFile(file, `${editingId}/gallery-${file.name}`)
             galleryUrls.push(url)
           }
-          updates.gallery_urls = galleryUrls
+        } else {
+          // Use existing previews (URLs from database)
+          galleryUrls.push(...galleryPreviews.filter(p => !p.startsWith('data:')))
         }
+        updates.gallery_urls = galleryUrls
 
         // Process content blocks
         const content: ContentBlock[] = []

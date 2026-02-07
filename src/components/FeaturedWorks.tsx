@@ -8,6 +8,8 @@ type Work = {
   description: string
   image: string
   slug: string
+  tags: string[] | null
+  category: string
 }
 
 const getCategoryFromTags = (tags: string[] | null): string => {
@@ -28,6 +30,16 @@ const getCategoryFromTags = (tags: string[] | null): string => {
   }
 
   return 'Featured'
+}
+
+const getCategorySlug = (category: string): string => {
+  const slugMap: Record<string, string> = {
+    'Brand Identity': 'brand-identity',
+    'UI/UX': 'ui-ux',
+    'Web Design': 'web-design',
+    'Illustration': 'illustration',
+  }
+  return slugMap[category] || 'brand-identity'
 }
 
 const FeaturedWorks = () => {
@@ -59,6 +71,8 @@ const FeaturedWorks = () => {
           description: study.featured_summary || study.summary || '',
           image: study.cover_url || '',
           slug: study.slug,
+          tags: study.tags || null,
+          category: getCategoryFromTags(study.tags),
         }))
         setWorks(mappedWorks)
       }
@@ -140,7 +154,7 @@ const FeaturedWorks = () => {
     const scrollContainer = scrollContainerRef.current
     if (!scrollContainer) return
 
-    const delta = dragStartXRef.current - event.clientX // Full sensitivity for smooth swipe
+    const delta = (dragStartXRef.current - event.clientX) * 1.3 // Increased sensitivity
     const scrollWidth = scrollContainer.scrollWidth
     const containerWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth
     const maxScroll = scrollWidth - containerWidth
@@ -231,7 +245,22 @@ const FeaturedWorks = () => {
                     <h3 className="text-2xl sm:text-3xl font-helvetica font-bold uppercase leading-snug">{work.title}</h3>
                   </div>
 
-                  <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">{work.description}</p>
+                  <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">{work.description}</p>
+
+                  {work.tags && work.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {work.tags.map((tag, index) => (
+                        <Link
+                          key={index}
+                          to={`/works/${getCategorySlug(getCategoryFromTags([tag]))}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="px-3 py-1 text-xs font-medium border border-gray-400 dark:border-gray-600 text-gray-800 dark:text-gray-200 rounded-full hover:border-gray-600 dark:hover:border-gray-400 transition-colors"
+                        >
+                          {tag}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
 
                   <div className="mt-auto overflow-hidden">
                     <img src={work.image} alt={work.title} className="w-full h-52 sm:h-64 object-cover" loading="lazy" />
@@ -271,14 +300,31 @@ const FeaturedWorks = () => {
           <div ref={scrollContainerRef} className="flex gap-8 px-6 transition-transform duration-100 ease-out will-change-transform">
             {works.map((work) => (
               <Link key={work.id} to={`/case-studies/${work.slug}`} className="flex-shrink-0 w-[80vw] md:w-[70vw] h-[70vh] group cursor-pointer" style={{ scrollSnapAlign: 'center' }}>
-                <div className="w-full h-full flex overflow-hidden p-3 sm:p-4 md:p-8 gap-3 sm:gap-4 md:gap-8 transition-colors duration-700">
-                  <div className="w-1/4 md:w-1/3 flex flex-col justify-center h-full">
-                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed pr-4 hidden md:block">{work.description}</p>
-                  </div>
+                <div className="w-full h-full flex flex-col overflow-hidden p-3 sm:p-4 md:p-8 gap-3 sm:gap-4 md:gap-8 transition-colors duration-700">
+                  <div className="flex-1 flex overflow-hidden gap-3 sm:gap-4 md:gap-8">
+                    <div className="w-1/4 md:w-1/3 flex flex-col justify-center h-full">
+                      <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed pr-4 hidden md:block">{work.description}</p>
+                      
+                      {work.tags && work.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-4 pr-4 hidden md:flex">
+                          {work.tags.map((tag, index) => (
+                            <Link
+                              key={index}
+                              to={`/works/${getCategorySlug(getCategoryFromTags([tag]))}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="px-3 py-1 text-xs font-medium border border-gray-400 dark:border-gray-600 text-gray-800 dark:text-gray-200 rounded-full hover:border-gray-600 dark:hover:border-gray-400 transition-colors"
+                            >
+                              {tag}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
 
-                  <div className="w-3/4 md:w-2/3 flex items-center justify-center relative z-10">
-                    <div className="w-full h-full relative overflow-hidden">
-                      <img src={work.image} alt={work.title} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                    <div className="w-3/4 md:w-2/3 flex items-center justify-center relative z-10">
+                      <div className="w-full h-full relative overflow-hidden">
+                        <img src={work.image} alt={work.title} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                      </div>
                     </div>
                   </div>
                 </div>

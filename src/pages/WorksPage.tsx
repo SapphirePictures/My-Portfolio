@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Lenis from 'lenis'
 import { supabase } from '../lib/supabaseClient'
+import Navbar from '../components/Navbar'
+import ScrollToTop from '../components/ScrollToTop'
 
 type CaseStudy = {
   id: string
@@ -52,6 +54,7 @@ const categories = [
 
 export default function WorksPage() {
   const [categoryImages, setCategoryImages] = useState<Record<string, string>>({})
+  const navigate = useNavigate()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -118,12 +121,16 @@ export default function WorksPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Navbar isDarkMode={false} />
       {/* Header */}
-      <header className="border-b border-gray-200">
+      <header className="border-b border-gray-200 pt-24">
         <div className="max-w-7xl mx-auto px-6 py-16">
-          <Link to="/" className="text-sm text-gray-600 hover:text-gray-900 mb-6 inline-block">
-            ← Back
-          </Link>
+          <button
+            onClick={() => navigate('/')}
+            className="text-sm text-gray-600 hover:text-gray-900 mb-6 inline-block"
+          >
+            ← Back to Home
+          </button>
           <h1 className="text-5xl md:text-6xl font-bold mb-4">Works</h1>
           <p className="text-xl text-gray-600 max-w-2xl">
             A collection of projects across different disciplines.
@@ -177,6 +184,7 @@ export default function WorksPage() {
           ))}
         </div>
       </main>
+      <ScrollToTop />
     </div>
   )
 }
