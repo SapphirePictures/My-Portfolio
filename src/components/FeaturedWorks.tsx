@@ -256,7 +256,6 @@ const FeaturedWorks = () => {
               ref={scrollContainerRef}
               onScroll={handleMobileScroll}
               className="flex gap-6 sm:gap-8 overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-              style={{ touchAction: 'pan-x' }}
             >
               {works.map((work) => (
                 <Link

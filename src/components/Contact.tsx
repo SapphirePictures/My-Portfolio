@@ -81,10 +81,9 @@ const Contact = () => {
 
           <button
             type="submit"
-            className="relative w-full py-4 bg-white text-black font-helvetica font-semibold rounded-lg overflow-hidden group transition-colors duration-300"
+            className="w-full px-6 py-4 border-2 border-blue-600 text-blue-600 text-base rounded-lg font-helvetica hover:bg-blue-600 hover:text-white transition-all"
           >
-            <span className="absolute inset-0 bg-blue-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></span>
-            <span className="relative z-10 group-hover:text-white transition-colors duration-300">Send Message</span>
+            Send Message
           </button>
         </form>
 
