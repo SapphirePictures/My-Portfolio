@@ -26,6 +26,7 @@ type CaseStudy = {
   content: ContentBlock[] | null
   project_type: 'web_dev' | 'other'
   coding_languages: string[] | null
+  tools_used: string[] | null
   project_url: string | null
   created_at: string
 }
@@ -220,6 +221,25 @@ export default function CaseStudyDetail() {
               )}
             </div>
           )}
+
+          {/* Design/Other Section */}
+          {caseStudy.project_type !== 'web_dev' && caseStudy.tools_used && caseStudy.tools_used.length > 0 && (
+            <div className="mt-12 pt-8 border-t border-gray-200">
+              <div className="mb-6">
+                <span className="font-semibold text-gray-900 block mb-3">Tools Used</span>
+                <div className="flex flex-wrap gap-2">
+                  {caseStudy.tools_used.map((tool, idx) => (
+                    <span
+                      key={idx}
+                      className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium"
+                    >
+                      {tool}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
@@ -249,19 +269,19 @@ export default function CaseStudyDetail() {
 
       {/* Content Blocks */}
       {caseStudy.content && caseStudy.content.length > 0 && (
-        <section className="max-w-4xl mx-auto px-6 py-20">
+        <section className="max-w-6xl mx-auto px-6 py-20">
           <div className="space-y-16">
             {(caseStudy.content as ContentBlock[]).map((block, index) => (
               <div key={block.id}>
                 {block.type === 'text' ? (
                   <div className="prose prose-lg max-w-none">
-                    <p className="whitespace-pre-wrap text-gray-700 leading-relaxed text-lg">{block.text}</p>
+                    <p className="whitespace-pre-wrap text-gray-500 leading-relaxed text-lg">{block.text}</p>
                   </div>
                 ) : (
                   <div>
                     <div className="rounded overflow-hidden bg-gray-200 mb-4">
                       {block.url && (
-                        <img src={block.url} alt={block.caption || `Block ${index}`} className="w-full h-auto" />
+                        <img src={block.url} alt={block.caption || `Block ${index}`} className="w-full h-auto object-contain" />
                       )}
                     </div>
                     {block.caption && <p className="text-center text-gray-600 text-lg">{block.caption}</p>}

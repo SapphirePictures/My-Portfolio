@@ -25,6 +25,7 @@ type CaseStudy = {
   is_featured: boolean
   project_type: 'web_dev' | 'other'
   coding_languages: string[] | null
+  tools_used: string[] | null
   project_url: string | null
   created_at: string
 }
@@ -53,6 +54,7 @@ export default function AdminDashboard() {
   const [tags, setTags] = useState('')
   const [projectType, setProjectType] = useState<'web_dev' | 'other'>('other')
   const [codingLanguages, setCodingLanguages] = useState('')
+  const [toolsUsed, setToolsUsed] = useState('')
   const [projectUrl, setProjectUrl] = useState('')
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
@@ -168,24 +170,86 @@ export default function AdminDashboard() {
   }
 
   const handleUpdateBlock = (id: string, updates: Partial<ContentBlock>) => {
-    setBlocks((prev) => prev.map((block) => (block.id === id ? { ...block, ...updates } : block)))
-    
-    // If updating an image file, generate preview
+    console.log('handleUpdateBlock called', { id, updates })
+
+    // Handle file upload - replace any existing url with new preview
     if (updates.file && updates.file instanceof File) {
+      console.log('File upload detected, clearing old URL')
+      
+      // Immediately clear old url and set new file
+      setBlocks((prev) => {
+        const updated = prev.map((block) => {
+          if (block.id === id) {
+            const newBlock = { ...block, file: updates.file }
+            // Remove old url property completely
+            delete newBlock.url
+            return newBlock
+          }
+          return block
+        })
+        console.log('Blocks after clearing URL:', updated)
+        return updated
+      })
+      
+      // Generate and set preview
       const reader = new FileReader()
       reader.onloadend = () => {
+        console.log('Preview generated:', reader.result)
         setBlocks((prev) =>
-          prev.map((block) =>
-            block.id === id ? { ...block, url: reader.result as string } : block
-          )
+          prev.map((block) => {
+            if (block.id === id) {
+              return { ...block, url: reader.result as string, file: updates.file }
+            }
+            return block
+          })
         )
       }
       reader.readAsDataURL(updates.file)
+      return
     }
+
+    // Handle explicit removal
+    if ('file' in updates && updates.file === null && 'url' in updates && updates.url === undefined) {
+      console.log('Explicit removal')
+      setBlocks((prev) =>
+        prev.map((block) => {
+          if (block.id === id) {
+            const updatedBlock = { ...block }
+            delete updatedBlock.url
+            updatedBlock.file = null
+            return updatedBlock
+          }
+          return block
+        })
+      )
+      return
+    }
+
+    // Normal update (text, caption, etc)
+    console.log('Normal update')
+    setBlocks((prev) => prev.map((block) => (block.id === id ? { ...block, ...updates } : block)))
   }
 
   const handleRemoveBlock = (id: string) => {
     setBlocks((prev) => prev.filter((block) => block.id !== id))
+  }
+
+  const handleMoveBlockUp = (index: number) => {
+    if (index === 0) return
+    setBlocks((prev) => {
+      const newBlocks = [...prev]
+      ;[newBlocks[index - 1], newBlocks[index]] = [newBlocks[index], newBlocks[index - 1]]
+      return newBlocks
+    })
+  }
+
+  const handleMoveBlockDown = (index: number) => {
+    if (index === blocks.length - 1) return
+    setBlocks((prev) => {
+      const newBlocks = [...prev]
+      ;[newBlocks[index], newBlocks[index + 1]] = [newBlocks[index + 1], newBlocks[index]]
+      return newBlocks
+    })
   }
 
   const uploadFile = async (file: File, path: string) => {
@@ -216,6 +280,7 @@ export default function AdminDashboard() {
     setTags('')
     setProjectType('other')
     setCodingLanguages('')
+    setToolsUsed('')
     setProjectUrl('')
     setCoverFile(null)
     setCoverPreview(null)
@@ -236,6 +301,7 @@ export default function AdminDashboard() {
     setTags(study.tags?.join(', ') || '')
     setProjectType(study.project_type || 'other')
     setCodingLanguages(study.coding_languages?.join(', ') || '')
+    setToolsUsed(study.tools_used?.join(', ') || '')
     setProjectUrl(study.project_url || '')
     setCoverPreview(study.cover_url)
     setGalleryPreviews(study.gallery_urls || [])
@@ -286,6 +352,12 @@ export default function AdminDashboard() {
             ? codingLanguages
                 .split(',')
                 .map((lang) => lang.trim())
+                .filter(Boolean)
+            : null,
+          tools_used: projectType !== 'web_dev'
+            ? toolsUsed
+                .split(',')
+                .map((tool) => tool.trim())
                 .filter(Boolean)
             : null,
           project_url: projectType === 'web_dev' ? projectUrl || null : null,
@@ -378,6 +450,12 @@ export default function AdminDashboard() {
             ? codingLanguages
                 .split(',')
                 .map((lang) => lang.trim())
+                .filter(Boolean)
+            : null,
+          tools_used: projectType !== 'web_dev'
+            ? toolsUsed
+                .split(',')
+                .map((tool) => tool.trim())
                 .filter(Boolean)
             : null,
           project_url: projectType === 'web_dev' ? projectUrl || null : null,
@@ -587,6 +665,20 @@ export default function AdminDashboard() {
               </div>
             )}
 
+            {projectType !== 'web_dev' && (
+              <div className="grid gap-4 sm:grid-cols-2 rounded-lg border border-purple-500/30 bg-purple-500/5 p-4">
+                <label className="flex flex-col gap-2 text-sm">
+                  Tools Used (Optional, comma separated)
+                  <input
+                    value={toolsUsed}
+                    onChange={(event) => setToolsUsed(event.target.value)}
+                    className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-white outline-none focus:border-white/30"
+                    placeholder="Figma, Photoshop, Illustrator"
+                  />
+                </label>
+              </div>
+            )}
+
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="flex flex-col gap-2 text-sm">
                 Cover Image
@@ -696,15 +788,35 @@ export default function AdminDashboard() {
               <div className="space-y-4">
                 {blocks.map((block, index) => (
                   <div key={block.id} className="rounded-xl border border-white/10 bg-black/30 p-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-3">
                       <p className="text-sm font-semibold">Block {index + 1}</p>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveBlock(block.id)}
-                        className="text-xs text-red-300 hover:text-red-200"
-                      >
-                        Remove
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleMoveBlockUp(index)}
+                          disabled={index === 0}
+                          className="text-xs px-2 py-1 bg-blue-600/50 text-blue-200 rounded hover:bg-blue-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                          title="Move up"
+                        >
+                          ↑ Up
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleMoveBlockDown(index)}
+                          disabled={index === blocks.length - 1}
+                          className="text-xs px-2 py-1 bg-blue-600/50 text-blue-200 rounded hover:bg-blue-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                          title="Move down"
+                        >
+                          ↓ Down
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveBlock(block.id)}
+                          className="text-xs px-2 py-1 bg-red-600/50 text-red-200 rounded hover:bg-red-600 transition-colors"
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
 
                     {block.type === 'text' ? (
@@ -725,11 +837,13 @@ export default function AdminDashboard() {
                             <input
                               type="file"
                               accept="image/*"
-                              onChange={(event) =>
-                                handleUpdateBlock(block.id, {
-                                  file: event.target.files?.[0] ?? null,
-                                })
-                              }
+                              key={block.url ? 'has-image' : 'no-image'}
+                              onChange={(event) => {
+                                const file = event.target.files?.[0]
+                                if (file) {
+                                  handleUpdateBlock(block.id, { file })
+                                }
+                              }}
                               className="text-sm text-white/70"
                             />
                           </label>
@@ -744,18 +858,22 @@ export default function AdminDashboard() {
                           </label>
                         </div>
                         {block.url && (
-                          <div className="relative">
+                          <div className="relative" key={`preview-${block.id}-${block.url.substring(0, 50)}`}>
                             <img
+                              key={block.url}
                               src={block.url}
                               alt={block.caption || 'Block image'}
-                              className="h-40 w-full rounded-lg object-cover"
+                              className="h-96 w-full rounded-lg object-cover"
                             />
                             <button
                               type="button"
-                              onClick={() => handleUpdateBlock(block.id, { file: null, url: undefined })}
+                              onClick={() => {
+                                console.log('Remove button clicked for block:', block.id)
+                                handleUpdateBlock(block.id, { file: null, url: undefined })
+                              }}
                               className="absolute right-2 top-2 rounded-full bg-red-500 px-2 py-1 text-xs text-white hover:bg-red-600"
                             >
-                              Replace
+                              Remove
                             </button>
                           </div>
                         )}

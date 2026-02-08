@@ -13,6 +13,7 @@ create table if not exists public.case_studies (
   is_featured boolean default false,
   project_type text default 'other',
   coding_languages text[],
+  tools_used text[],
   project_url text,
   created_at timestamptz default now()
 );

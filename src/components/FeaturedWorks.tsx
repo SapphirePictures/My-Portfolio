@@ -46,6 +46,8 @@ const FeaturedWorks = () => {
   const containerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const titleContainerRef = useRef<HTMLDivElement>(null)
+  const manualOffsetRef = useRef(0)
+  const lastAutoTargetRef = useRef(0)
   const [isMobile, setIsMobile] = useState(false)
   const [works, setWorks] = useState<Work[]>([])
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
@@ -81,7 +83,7 @@ const FeaturedWorks = () => {
   }, [])
 
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)')
+    const mq = window.matchMedia('(max-width: 1023px)')
     const handleChange = () => setIsMobile(mq.matches)
     handleChange()
     mq.addEventListener('change', handleChange)
