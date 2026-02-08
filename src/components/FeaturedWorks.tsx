@@ -58,12 +58,16 @@ const FeaturedWorks = () => {
 
   useEffect(() => {
     const loadFeaturedWorks = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('case_studies')
         .select('*')
         .eq('is_featured', true)
         .order('created_at', { ascending: false })
-        .limit(4)
+
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load featured works:', error.message)
+      }
 
       if (data) {
         const mappedWorks: Work[] = data.map((study: any) => ({
@@ -91,6 +95,7 @@ const FeaturedWorks = () => {
   }, [])
 
   useEffect(() => {
+    if (isMobile) return
     const container = containerRef.current
     const scrollContainer = scrollContainerRef.current
     if (!container || !scrollContainer || works.length === 0) return
@@ -134,7 +139,19 @@ const FeaturedWorks = () => {
     }, 100)
 
     return () => clearTimeout(timer)
-  }, [works])
+  }, [isMobile, works])
+
+  const handleMobileScroll = () => {
+    if (!isMobile) return
+    const scrollContainer = scrollContainerRef.current
+    if (!scrollContainer) return
+    const containerWidth = scrollContainer.clientWidth
+    const cardWidth = containerWidth * 0.85
+    const gap = 24
+    const cardPlusGap = cardWidth + gap
+    const nearestIndex = Math.round(scrollContainer.scrollLeft / cardPlusGap)
+    setCurrentCardIndex(Math.min(nearestIndex, works.length - 1))
+  }
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (!isMobile) return
@@ -228,8 +245,8 @@ const FeaturedWorks = () => {
 
   if (isMobile) {
     return (
-      <section id="works" ref={containerRef} className="relative transition-colors duration-700 bg-white text-black dark:bg-black dark:text-white" style={{ height: '300vh' }}>
-        <div className="sticky top-0 h-screen flex items-center overflow-hidden bg-transparent">
+      <section id="works" ref={containerRef} className="relative transition-colors duration-700 bg-white text-black dark:bg-black dark:text-white py-16">
+        <div className="h-auto flex items-center overflow-hidden bg-transparent">
           <div className="px-5 sm:px-8 w-full h-full flex flex-col justify-center">
             <div className="mb-8 sm:mb-10">
               <h2 className="text-sm md:text-base font-helvetica font-normal text-gray-900 dark:text-gray-100 tracking-wide uppercase">Selected Works</h2>
@@ -237,12 +254,9 @@ const FeaturedWorks = () => {
 
             <div
               ref={scrollContainerRef}
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              onPointerCancel={handlePointerUp}
-              className="flex gap-6 sm:gap-8 transition-transform duration-100 ease-out will-change-transform overflow-x-hidden"
-              style={{ willChange: 'transform', touchAction: 'pan-y' }}
+              onScroll={handleMobileScroll}
+              className="flex gap-6 sm:gap-8 overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+              style={{ touchAction: 'pan-x' }}
             >
               {works.map((work) => (
                 <Link
