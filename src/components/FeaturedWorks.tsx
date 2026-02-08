@@ -49,12 +49,6 @@ const FeaturedWorks = () => {
   const [isMobile, setIsMobile] = useState(false)
   const [works, setWorks] = useState<Work[]>([])
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
-  const manualOffsetRef = useRef(0)
-  const lastAutoTargetRef = useRef(0)
-  const isDraggingRef = useRef(false)
-  const dragStartXRef = useRef(0)
-  const dragStartOffsetRef = useRef(0)
-  const dragPointerIdRef = useRef<number | null>(null)
 
   useEffect(() => {
     const loadFeaturedWorks = async () => {
@@ -151,92 +145,6 @@ const FeaturedWorks = () => {
     const cardPlusGap = cardWidth + gap
     const nearestIndex = Math.round(scrollContainer.scrollLeft / cardPlusGap)
     setCurrentCardIndex(Math.min(nearestIndex, works.length - 1))
-  }
-
-  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!isMobile) return
-    if (event.pointerType !== 'touch') return
-    const scrollContainer = scrollContainerRef.current
-    if (!scrollContainer) return
-
-    isDraggingRef.current = true
-    dragPointerIdRef.current = event.pointerId
-    dragStartXRef.current = event.clientX
-    dragStartOffsetRef.current = manualOffsetRef.current
-    event.currentTarget.setPointerCapture(event.pointerId)
-  }
-
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!isMobile) return
-    if (!isDraggingRef.current || dragPointerIdRef.current !== event.pointerId) return
-    const scrollContainer = scrollContainerRef.current
-    if (!scrollContainer) return
-
-    const delta = (dragStartXRef.current - event.clientX) * 1.3 // Increased sensitivity
-    const scrollWidth = scrollContainer.scrollWidth
-    const containerWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth
-    const maxScroll = scrollWidth - containerWidth
-    const autoTarget = lastAutoTargetRef.current
-    const minOffset = -autoTarget
-    const maxOffset = maxScroll - autoTarget
-    const nextOffset = Math.min(Math.max(dragStartOffsetRef.current + delta, minOffset), maxOffset)
-
-    manualOffsetRef.current = nextOffset
-    const combined = Math.min(Math.max(autoTarget + manualOffsetRef.current, 0), maxScroll)
-    scrollContainer.style.transform = `translateX(-${combined}px)`
-    if (titleContainerRef.current) {
-      titleContainerRef.current.style.transform = `translateX(-${combined * 0.95}px) translateY(120px)`
-    }
-  }
-
-  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (dragPointerIdRef.current !== event.pointerId) return
-    isDraggingRef.current = false
-    dragPointerIdRef.current = null
-
-    // Snap to nearest card
-    const scrollContainer = scrollContainerRef.current
-    if (!scrollContainer) return
-
-    const containerWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth
-    const cardWidth = containerWidth * 0.85 // matches w-[85vw]
-    const gap = 24 // matches gap-6 (1.5rem = 24px)
-    const cardPlusGap = cardWidth + gap
-    
-    const scrollWidth = scrollContainer.scrollWidth
-    const maxScroll = scrollWidth - containerWidth
-    const autoTarget = lastAutoTargetRef.current
-    const combined = Math.min(Math.max(autoTarget + manualOffsetRef.current, 0), maxScroll)
-    
-    // Find nearest snap point
-    const nearestIndex = Math.round(combined / cardPlusGap)
-    const snapPosition = nearestIndex * cardPlusGap
-    const clampedSnap = Math.min(Math.max(snapPosition, 0), maxScroll)
-    
-    // Update manual offset to match snap position
-    manualOffsetRef.current = clampedSnap - autoTarget
-    
-    // Animate to snap position
-    scrollContainer.style.transition = 'transform 0.3s ease-out'
-    scrollContainer.style.transform = `translateX(-${clampedSnap}px)`
-    if (titleContainerRef.current) {
-      titleContainerRef.current.style.transition = 'transform 0.3s ease-out'
-      titleContainerRef.current.style.transform = `translateX(-${clampedSnap * 0.95}px) translateY(120px)`
-    }
-    
-    // Remove transition after animation
-    setTimeout(() => {
-      if (scrollContainer) scrollContainer.style.transition = ''
-      if (titleContainerRef.current) titleContainerRef.current.style.transition = ''
-      
-      // Update current card index based on snap position
-      const containerWidth = scrollContainer.parentElement?.clientWidth || window.innerWidth
-      const cardWidth = containerWidth * 0.85
-      const gap = 24
-      const cardPlusGap = cardWidth + gap
-      const nearestIndex = Math.round(clampedSnap / cardPlusGap)
-      setCurrentCardIndex(Math.min(nearestIndex, works.length - 1))
-    }, 300)
   }
 
   if (works.length === 0) {
