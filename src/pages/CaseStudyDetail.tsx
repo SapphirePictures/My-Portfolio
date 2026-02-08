@@ -24,6 +24,9 @@ type CaseStudy = {
   cover_url: string | null
   gallery_urls: string[] | null
   content: ContentBlock[] | null
+  project_type: 'web_dev' | 'other'
+  coding_languages: string[] | null
+  project_url: string | null
   created_at: string
 }
 
@@ -186,6 +189,37 @@ export default function CaseStudyDetail() {
               </div>
             )}
           </div>
+
+          {/* Web Dev Section */}
+          {caseStudy.project_type === 'web_dev' && (
+            <div className="mt-12 pt-8 border-t border-gray-200">
+              {caseStudy.coding_languages && caseStudy.coding_languages.length > 0 && (
+                <div className="mb-6">
+                  <span className="font-semibold text-gray-900 block mb-3">Technologies</span>
+                  <div className="flex flex-wrap gap-2">
+                    {caseStudy.coding_languages.map((lang, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
+                      >
+                        {lang}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {caseStudy.project_url && (
+                <a
+                  href={caseStudy.project_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-helvetica hover:bg-blue-600 hover:text-white transition-all"
+                >
+                  Visit Website →
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </header>
 

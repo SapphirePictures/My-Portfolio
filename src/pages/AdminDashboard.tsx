@@ -23,6 +23,9 @@ type CaseStudy = {
   gallery_urls: string[] | null
   content: ContentBlock[] | null
   is_featured: boolean
+  project_type: 'web_dev' | 'other'
+  coding_languages: string[] | null
+  project_url: string | null
   created_at: string
 }
 
@@ -48,6 +51,9 @@ export default function AdminDashboard() {
   const [year, setYear] = useState('')
   const [role, setRole] = useState('')
   const [tags, setTags] = useState('')
+  const [projectType, setProjectType] = useState<'web_dev' | 'other'>('other')
+  const [codingLanguages, setCodingLanguages] = useState('')
+  const [projectUrl, setProjectUrl] = useState('')
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
   const [galleryFiles, setGalleryFiles] = useState<File[]>([])
@@ -208,6 +214,9 @@ export default function AdminDashboard() {
     setYear('')
     setRole('')
     setTags('')
+    setProjectType('other')
+    setCodingLanguages('')
+    setProjectUrl('')
     setCoverFile(null)
     setCoverPreview(null)
     setGalleryFiles([])
@@ -225,6 +234,9 @@ export default function AdminDashboard() {
     setYear(study.year || '')
     setRole(study.role || '')
     setTags(study.tags?.join(', ') || '')
+    setProjectType(study.project_type || 'other')
+    setCodingLanguages(study.coding_languages?.join(', ') || '')
+    setProjectUrl(study.project_url || '')
     setCoverPreview(study.cover_url)
     setGalleryPreviews(study.gallery_urls || [])
     setBlocks((study.content as ContentBlock[]) || [])
@@ -269,6 +281,14 @@ export default function AdminDashboard() {
             .split(',')
             .map((tag) => tag.trim())
             .filter(Boolean),
+          project_type: projectType,
+          coding_languages: projectType === 'web_dev' 
+            ? codingLanguages
+                .split(',')
+                .map((lang) => lang.trim())
+                .filter(Boolean)
+            : null,
+          project_url: projectType === 'web_dev' ? projectUrl || null : null,
         }
 
         // Upload new cover if changed
@@ -353,6 +373,14 @@ export default function AdminDashboard() {
             .split(',')
             .map((tag) => tag.trim())
             .filter(Boolean),
+          project_type: projectType,
+          coding_languages: projectType === 'web_dev' 
+            ? codingLanguages
+                .split(',')
+                .map((lang) => lang.trim())
+                .filter(Boolean)
+            : null,
+          project_url: projectType === 'web_dev' ? projectUrl || null : null,
           cover_url: coverUrl,
           gallery_urls: galleryUrls,
           content,
@@ -520,6 +548,44 @@ export default function AdminDashboard() {
                 />
               </label>
             </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="flex flex-col gap-2 text-sm">
+                Project Type
+                <select
+                  value={projectType}
+                  onChange={(event) => setProjectType(event.target.value as 'web_dev' | 'other')}
+                  className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-white outline-none focus:border-white/30"
+                >
+                  <option value="other">Other (Design, Art, etc.)</option>
+                  <option value="web_dev">Web Development</option>
+                </select>
+              </label>
+            </div>
+
+            {projectType === 'web_dev' && (
+              <div className="grid gap-4 sm:grid-cols-2 rounded-lg border border-blue-500/30 bg-blue-500/5 p-4">
+                <label className="flex flex-col gap-2 text-sm">
+                  Coding Languages (comma separated)
+                  <input
+                    value={codingLanguages}
+                    onChange={(event) => setCodingLanguages(event.target.value)}
+                    className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-white outline-none focus:border-white/30"
+                    placeholder="React, TypeScript, Tailwind CSS"
+                  />
+                </label>
+                <label className="flex flex-col gap-2 text-sm">
+                  Live Project URL
+                  <input
+                    value={projectUrl}
+                    onChange={(event) => setProjectUrl(event.target.value)}
+                    type="url"
+                    className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-white outline-none focus:border-white/30"
+                    placeholder="https://example.com"
+                  />
+                </label>
+              </div>
+            )}
 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="flex flex-col gap-2 text-sm">

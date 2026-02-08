@@ -9,7 +9,12 @@ create table if not exists public.case_studies (
   tags text[],
   cover_url text,
   gallery_urls text[],
-  content jsonb,  is_featured boolean default false,  created_at timestamptz default now()
+  content jsonb,
+  is_featured boolean default false,
+  project_type text default 'other',
+  coding_languages text[],
+  project_url text,
+  created_at timestamptz default now()
 );
 
 alter table public.case_studies enable row level security;
