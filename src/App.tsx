@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Lenis from 'lenis'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -10,7 +10,29 @@ import ContactCTA from './components/ContactCTA'
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [clickCount, setClickCount] = useState(0)
+  const [clickTimer, setClickTimer] = useState<NodeJS.Timeout | null>(null)
   const location = useLocation()
+  const navigate = useNavigate()
+
+  const handleFooterClick = () => {
+    const newCount = clickCount + 1
+    setClickCount(newCount)
+
+    if (clickTimer) {
+      clearTimeout(clickTimer)
+    }
+
+    if (newCount === 3) {
+      setClickCount(0)
+      navigate('/admin')
+    } else {
+      const timer = setTimeout(() => {
+        setClickCount(0)
+      }, 1000)
+      setClickTimer(timer)
+    }
+  }
 
   useEffect(() => {
     // Initialize Lenis smooth scroll
@@ -91,7 +113,10 @@ function App() {
       
       <footer className="bg-black text-white py-8 px-6">
         <div className="max-w-7xl mx-auto text-center">
-          <p className="font-helvetica text-gray-400">
+          <p 
+            onClick={handleFooterClick}
+            className="font-helvetica text-gray-400 cursor-pointer select-none"
+          >
             © 2025 Wesley Sapphire Inc. All rights reserved.
           </p>
         </div>

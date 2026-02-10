@@ -35,11 +35,34 @@ const ContactPage = () => {
     }
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Form submitted:', formData)
-    alert('Thank you for reaching out! I will get back to you soon.')
-    setFormData({ name: '', email: '', jobTitle: '', howHeard: '', message: '' })
+    
+    try {
+      const response = await fetch('https://formspree.io/f/mvzbzpza', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          jobTitle: formData.jobTitle,
+          howHeard: formData.howHeard,
+          message: formData.message,
+        })
+      })
+
+      if (response.ok) {
+        alert('Thank you for reaching out! I will get back to you soon.')
+        setFormData({ name: '', email: '', jobTitle: '', howHeard: '', message: '' })
+      } else {
+        alert('Something went wrong. Please try again or email me directly.')
+      }
+    } catch (error) {
+      console.error('Form submission error:', error)
+      alert('Something went wrong. Please try again or email me directly.')
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -63,10 +86,10 @@ const ContactPage = () => {
                 Let's Talk
               </h3>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-merriweather font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-                Got a project? Let's bring your vision to life through thoughtful design.
+                Ready to collaborate?
               </h1>
-              <p className="text-xl text-gray-900 dark:text-white font-helvetica leading-relaxed">
-                Based in Nigeria, collaborating worldwide.
+              <p className="text-xl text-gray-600 dark:text-gray-400 font-helvetica leading-relaxed">
+                Based in Nigeria, working globally. Available for brand design, UI/UX projects, and creative direction.
               </p>
             </div>
 

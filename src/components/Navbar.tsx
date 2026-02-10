@@ -7,7 +7,7 @@ const navItems = [
 	{ label: 'Works', path: '/works' },
 	// { label: 'Services', id: 'services' },
 	{ label: 'About Me', id: 'about' },
-	{ label: 'Admin', path: '/admin' },
+	{ label: 'Contact', path: '/contact' },
 ];
 
 const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {

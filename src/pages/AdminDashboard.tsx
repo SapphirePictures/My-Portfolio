@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 
 type ContentBlock = {
@@ -41,10 +42,9 @@ const slugify = (value: string) =>
 const bucketName = 'case-studies'
 
 export default function AdminDashboard() {
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState('');
+  const [authError, setAuthError] = useState('');
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [summary, setSummary] = useState('')
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
   const [blocks, setBlocks] = useState<ContentBlock[]>([])
   const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -75,30 +75,105 @@ export default function AdminDashboard() {
   }, [])
 
   useEffect(() => {
-    void loadCaseStudies()
+    window.scrollTo(0, 0)
   }, [])
 
+  useEffect(() => {
+    console.log('useEffect triggered - isAuthenticated:', isAuthenticated);
+    if (isAuthenticated) {
+      console.log('Calling loadCaseStudies...');
+      void loadCaseStudies()
+    }
+  }, [isAuthenticated])
+
   const loadCaseStudies = async () => {
+    console.log('loadCaseStudies called');
     setIsLoading(true)
     setError(null)
 
     if (!isSupabaseReady) {
+      console.log('Supabase not ready');
+      setError('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file.')
       setIsLoading(false)
       return
     }
 
-    const { data, error: fetchError } = await supabase
-      .from('case_studies')
-      .select('*')
-      .order('created_at', { ascending: false })
+    try {
+      console.log('Fetching case studies from Supabase...');
+      const { data, error: fetchError } = await supabase
+        .from('case_studies')
+        .select('*')
+        .order('created_at', { ascending: false })
 
-    if (fetchError) {
-      setError(fetchError.message)
-    } else {
-      setCaseStudies((data as CaseStudy[]) ?? [])
+      if (fetchError) {
+        console.log('Fetch error:', fetchError.message);
+        setError(fetchError.message)
+      } else {
+        console.log('Case studies loaded:', data?.length || 0);
+        setCaseStudies((data as CaseStudy[]) ?? [])
+      }
+    } catch (err) {
+      console.log('Exception:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      console.log('Setting isLoading to false');
+      setIsLoading(false)
     }
+  }
 
-    setIsLoading(false)
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Password submitted:', password);
+    if (password === '1234567890$Im') {
+      console.log('Password correct, authenticating...');
+      setIsAuthenticated(true);
+      setAuthError('');
+    } else {
+      console.log('Password incorrect');
+      setAuthError('Incorrect password');
+      setPassword('');
+    }
+  };
+
+  console.log('AdminDashboard render - isAuthenticated:', isAuthenticated, 'isLoading:', isLoading);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-neutral-950 text-white flex items-center justify-center px-6">
+        <div className="w-full max-w-md space-y-6">
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-bold font-helvetica">Admin Access</h1>
+            <p className="text-white/60">Enter password to continue</p>
+          </div>
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <div>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 outline-none focus:border-white/30 transition-colors"
+                autoFocus
+              />
+              {authError && (
+                <p className="mt-2 text-sm text-red-400">{authError}</p>
+              )}
+            </div>
+            <button
+              type="submit"
+              className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+            >
+              Access Dashboard
+            </button>
+          </form>
+          <div className="text-center">
+            <Link to="/" className="text-sm text-white/60 hover:text-white transition-colors">
+              ← Back to Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const handleTitleChange = (value: string) => {
@@ -519,15 +594,35 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
       <header className="border-b border-white/10">
-        <div className="max-w-6xl mx-auto px-6 py-6 flex flex-col gap-2">
-          <h1 className="text-3xl font-semibold tracking-tight">Admin Dashboard</h1>
-          <p className="text-sm text-white/60">
-            Upload Behance-style case studies with cover images, galleries, and content blocks.
-          </p>
+        <div className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-semibold tracking-tight">Admin Dashboard</h1>
+            <p className="text-sm text-white/60">
+              Upload Behance-style case studies with cover images, galleries, and content blocks.
+            </p>
+          </div>
+          <div className="text-2xl font-helvetica font-bold text-white">
+            <Link 
+              to="/" 
+              className="text-white hover:text-blue-400 transition-colors"
+            >
+              Sapphire Inc.
+            </Link>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-10 grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+      {isLoading && (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="text-white/60">Loading dashboard...</p>
+          </div>
+        </div>
+      )}
+
+      {!isLoading && (
+        <main className="max-w-6xl mx-auto px-6 py-10 grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="space-y-8">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-6">
             <div className="space-y-1">
@@ -973,6 +1068,7 @@ export default function AdminDashboard() {
           </div>
         </aside>
       </main>
+      )}
     </div>
   )
 }
