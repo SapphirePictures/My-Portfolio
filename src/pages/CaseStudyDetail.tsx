@@ -167,10 +167,10 @@ export default function CaseStudyDetail() {
             ← Back to Category
           </button>
           <h1 className="text-6xl font-bold mb-6">{caseStudy.title}</h1>
-          {caseStudy.summary && <p className="text-2xl text-gray-600 leading-relaxed">{caseStudy.summary}</p>}
+          {caseStudy.summary && <p className="text-2xl text-gray-500 leading-relaxed">{caseStudy.summary}</p>}
 
           {/* Meta */}
-          <div className="mt-8 flex flex-wrap gap-8 text-base text-gray-600">
+          <div className="mt-8 flex flex-wrap gap-8 text-base text-gray-500">
             {caseStudy.year && (
               <div>
                 <span className="font-semibold text-gray-900">Year</span>

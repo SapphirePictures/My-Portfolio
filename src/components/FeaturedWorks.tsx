@@ -165,13 +165,14 @@ const FeaturedWorks = () => {
             <div
               ref={scrollContainerRef}
               onScroll={handleMobileScroll}
-              className="flex gap-6 sm:gap-8 overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+              className="flex gap-6 sm:gap-8 overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth"
+              style={{ scrollBehavior: 'smooth', scrollSnapType: 'x mandatory', scrollSnapStop: 'always' }}
             >
               {works.map((work) => (
                 <Link
                   key={work.id}
                   to={`/case-studies/${work.slug}`}
-                  className="snap-center flex-shrink-0 w-[85vw] sm:w-[70vw] max-w-sm px-6 py-10 sm:px-8 sm:py-12 flex flex-col gap-4 sm:gap-6"
+                  className="snap-center snap-always flex-shrink-0 w-[85vw] sm:w-[70vw] max-w-sm px-6 py-10 sm:px-8 sm:py-12 flex flex-col gap-4 sm:gap-6"
                 >
                   <div className="flex flex-col gap-1">
                     <h3 className="text-2xl sm:text-3xl font-helvetica font-bold uppercase leading-snug">{work.title}</h3>

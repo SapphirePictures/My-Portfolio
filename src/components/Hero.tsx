@@ -65,7 +65,7 @@ const Hero = () => {
               transform: hasAnimated ? 'translateY(0)' : 'translateY(100%)'
             }}
           >
-            Designing Brands and Interfaces<br />That People Remember.
+            Designs you will remember.
           </h2>
         </div>
       </div>
@@ -75,7 +75,7 @@ const Hero = () => {
         <div className="w-full max-w-7xl mx-0 flex justify-start">
           <p 
             ref={descriptionRef}
-            className="text-3xl md:text-5xl lg:text-6xl font-helvetica text-gray-400 dark:text-gray-500 leading-tight font-light transition-colors duration-700 text-left"
+            className="text-3xl md:text-5xl lg:text-6xl font-helvetica text-gray-400 dark:text-gray-500 leading-tight md:leading-snug font-light transition-colors duration-700 text-left"
             style={{ maxWidth: '1400px', marginLeft: 0 }}
           >
             {[

@@ -26,14 +26,14 @@ const Services = () => {
   ]
 
   const skills = [
-    'React & TypeScript',
-    'Node.js & Express',
+    'Visual Design',
+    'Brand Design',
     'UI/UX Design',
     'Figma & Adobe Suite',
-    'Tailwind CSS',
-    'Next.js',
-    'MongoDB & PostgreSQL',
-    'Git & CI/CD',
+    'Web Design',
+    'Illustration',
+    'Brand Strategy',
+    'Design Systems',
   ]
 
   useEffect(() => {
