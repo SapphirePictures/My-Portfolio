@@ -6,7 +6,7 @@ import Hero from './components/Hero'
 import FeaturedWorks from './components/FeaturedWorks'
 import Services from './components/Services'
 import About from './components/About'
-import Contact from './components/Contact'
+import ContactCTA from './components/ContactCTA'
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false)
@@ -87,7 +87,7 @@ function App() {
       <FeaturedWorks />
       <Services />
       <About />
-      <Contact />
+      <ContactCTA />
       
       <footer className="bg-black text-white py-8 px-6">
         <div className="max-w-7xl mx-auto text-center">
