@@ -10,9 +10,15 @@ type Work = {
   slug: string
   tags: string[] | null
   category: string
+  projectType?: string
 }
 
-const getCategoryFromTags = (tags: string[] | null): string => {
+const getCategoryFromTags = (tags: string[] | null, projectType?: string): string => {
+  // Prioritize project_type if it's web_dev
+  if (projectType === 'web_dev') {
+    return 'Web Design'
+  }
+
   if (!tags) return 'Featured'
 
   const tagsLower = tags.map((tag) => tag.toLowerCase())
@@ -73,7 +79,8 @@ const FeaturedWorks = () => {
           image: study.cover_url || '',
           slug: study.slug,
           tags: study.tags || null,
-          category: getCategoryFromTags(study.tags),
+          projectType: study.project_type,
+          category: getCategoryFromTags(study.tags, study.project_type),
         }))
         setWorks(mappedWorks)
       }
@@ -223,8 +230,13 @@ const FeaturedWorks = () => {
 
   return (
     <section id="works" ref={containerRef} className="relative transition-colors duration-700 bg-white text-black dark:bg-black dark:text-white" style={{ height: '300vh' }}>
-      <div className="sticky top-0 h-screen flex items-center overflow-hidden bg-transparent">
-        <div className="relative w-full h-full flex items-center">
+      <div className="sticky top-0 h-screen flex flex-col overflow-hidden bg-transparent">
+        <div className="hidden lg:flex items-center px-6 py-6 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800">
+          <h2 className="text-sm md:text-base font-helvetica font-normal uppercase tracking-widest text-gray-900 dark:text-gray-100">
+            Selected Works
+          </h2>
+        </div>
+        <div className="relative w-full flex-1 flex items-center">
           <div
             ref={titleContainerRef}
             className="pointer-events-none absolute left-0 top-0 h-full w-full flex gap-8 px-6 z-30"

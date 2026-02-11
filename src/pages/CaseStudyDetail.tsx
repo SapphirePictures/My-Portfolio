@@ -31,7 +31,12 @@ type CaseStudy = {
   created_at: string
 }
 
-const getCategoryFromTags = (tags: string[] | null): string | null => {
+const getCategoryFromTags = (tags: string[] | null, projectType?: string): string | null => {
+  // Prioritize project_type if it's web_dev
+  if (projectType === 'web_dev') {
+    return 'web-design'
+  }
+
   if (!tags) return null
 
   const tagsLower = tags.map((tag) => tag.toLowerCase())
@@ -49,6 +54,17 @@ const getCategoryFromTags = (tags: string[] | null): string | null => {
   }
 
   return null
+}
+
+const getCategoryLabel = (category: string): string => {
+  const labelMap: Record<string, string> = {
+    'brand-identity': 'Brand Identity',
+    'ui-ux': 'UI/UX',
+    'web-design': 'Web Design',
+    'illustration': 'Illustration',
+  }
+
+  return labelMap[category] || 'Works'
 }
 
 export default function CaseStudyDetail() {
@@ -83,7 +99,7 @@ export default function CaseStudyDetail() {
         setCaseStudy(study)
 
         // Load all studies in the same category
-        const category = getCategoryFromTags(study.tags)
+        const category = getCategoryFromTags(study.tags, study.project_type)
         if (category) {
           const { data: allStudies } = await supabase
             .from('case_studies')
@@ -92,7 +108,7 @@ export default function CaseStudyDetail() {
 
           if (allStudies) {
             const filtered = (allStudies as CaseStudy[]).filter((s) => {
-              const studyCategory = getCategoryFromTags(s.tags)
+              const studyCategory = getCategoryFromTags(s.tags, s.project_type)
               return studyCategory === category
             })
             setCategoryStudies(filtered)
@@ -149,26 +165,29 @@ export default function CaseStudyDetail() {
     )
   }
 
+  const category = getCategoryFromTags(caseStudy.tags, caseStudy.project_type)
+
   return (
     <article className="min-h-screen bg-white">
       <Navbar isDarkMode={false} />
       {/* Header */}
       <header className="border-b border-gray-200 pt-24">
         <div className="max-w-4xl mx-auto px-6 py-12">
-          <button
-            onClick={() => {
-              // Determine the category from tags and navigate to it
-              const category = getCategoryFromTags(caseStudy.tags)
-              if (category) {
-                navigate(`/works/${category}`)
-              } else {
-                navigate('/works')
-              }
-            }}
-            className="text-sm text-gray-600 hover:text-gray-900 mb-6 inline-block"
-          >
-            ← Back to Category
-          </button>
+          <nav aria-label="Breadcrumb" className="text-sm text-gray-600 mb-6">
+            <div className="flex items-center gap-2">
+              <Link to="/works" className="hover:text-gray-900">
+                Works
+              </Link>
+              {category && (
+                <>
+                  <span className="text-gray-400">/</span>
+                  <Link to={`/works/${category}`} className="hover:text-gray-900">
+                    {getCategoryLabel(category)}
+                  </Link>
+                </>
+              )}
+            </div>
+          </nav>
           <h1 className="text-6xl font-bold mb-6">{caseStudy.title}</h1>
           {caseStudy.summary && <p className="text-2xl text-gray-500 leading-relaxed">{caseStudy.summary}</p>}
 
@@ -214,7 +233,7 @@ export default function CaseStudyDetail() {
               )}
               {caseStudy.project_url && (
                 <a
-                  href={caseStudy.project_url}
+                  href={caseStudy.project_url.trim().startsWith('http') ? caseStudy.project_url.trim() : `https://${caseStudy.project_url.trim()}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-helvetica hover:bg-blue-600 hover:text-white transition-all"

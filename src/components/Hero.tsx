@@ -79,9 +79,8 @@ const Hero = () => {
             style={{ maxWidth: '1400px', marginLeft: 0 }}
           >
             {[
-              'Visual designer crafting bold brand identities,',
-              'clean interfaces, and expressive illustrations',
-              'for modern businesses.'
+              'I design brands and interfaces people actually want to use, and create custom illustrations that feel real.',
+              'Basically, I help modern businesses stand out without trying too hard.'
             ].map((line, index) => (
               <span
                 key={index}

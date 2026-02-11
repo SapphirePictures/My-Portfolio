@@ -12,10 +12,6 @@ const Services = () => {
       description: 'Guiding brand vision and creative direction to ensure clarity before execution.',
     },
     {
-      title: 'Art Direction',
-      description: 'Defining the look, mood, and emotional coherence across campaigns and branded content.',
-    },
-    {
       title: 'Brand Guidelines',
       description: 'Defining the rules that keep a brand consistent from typography and color systems to motion, tone, and digital behavior.',
     },
@@ -29,14 +25,6 @@ const Services = () => {
     { 
       name: 'Visual Design', 
       icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /></svg>
-    },
-    { 
-      name: 'Brand Design', 
-      icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>
-    },
-    { 
-      name: 'UI/UX Design', 
-      icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" /></svg>
     },
     { 
       name: 'Figma & Adobe Suite', 
@@ -108,10 +96,10 @@ const Services = () => {
           className="text-3xl md:text-5xl lg:text-6xl font-helvetica text-gray-400 dark:text-gray-500 mb-24 leading-tight font-light"
         >
           {[
-            'Expertise across a range of disciplines',
-            'combined with strategic thinking to deliver',
-            'cohesive creative solutions that elevate',
-            'your brand.'
+            'I work across brand, UI, and illustration',
+            'to keep the thinking consistent.',
+            'The result is cohesive creative work',
+            'that lifts your brand.'
           ].map((line, index) => (
             <span
               key={index}
@@ -134,7 +122,13 @@ const Services = () => {
           {skills.map((skill, index) => (
             <div
               key={index}
+              ref={(el) => { serviceRefs.current[index] = el }}
               className="bg-gray-50 dark:bg-gray-900/30 px-4 py-6 rounded-lg font-helvetica border border-gray-200 dark:border-gray-800/50 flex flex-col items-center gap-3"
+              style={{
+                animation: visibleServices[index] ? `slideUp 0.8s ease-out forwards` : 'none',
+                transform: visibleServices[index] ? 'translateY(0)' : 'translateY(100%)',
+                opacity: visibleServices[index] ? 1 : 0
+              }}
             >
               <div className="text-blue-500 dark:text-blue-400">
                 {skill.icon}

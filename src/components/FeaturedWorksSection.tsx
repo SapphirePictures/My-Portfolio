@@ -15,10 +15,16 @@ type CaseStudy = {
   gallery_urls: string[] | null
   content: unknown | null
   is_featured: boolean
+  project_type?: string
   created_at: string
 }
 
-const getCategoryFromTags = (tags: string[] | null): string => {
+const getCategoryFromTags = (tags: string[] | null, projectType?: string): string => {
+  // Prioritize project_type if it's web_dev
+  if (projectType === 'web_dev') {
+    return 'Web Design'
+  }
+
   if (!tags) return 'Featured'
 
   const tagsLower = tags.map((tag) => tag.toLowerCase())
@@ -36,7 +42,7 @@ const getCategoryFromTags = (tags: string[] | null): string => {
   }
 
   return 'Featured'
-}
+}}
 
 export default function FeaturedWorksSection() {
   const [featuredStudies, setFeaturedStudies] = useState<CaseStudy[]>([])
@@ -68,7 +74,7 @@ export default function FeaturedWorksSection() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="space-y-20">
           {featuredStudies.map((study, idx) => {
-            const category = getCategoryFromTags(study.tags)
+            const category = getCategoryFromTags(study.tags, study.project_type)
             const isEven = idx % 2 === 0
 
             return (
