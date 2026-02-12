@@ -110,7 +110,7 @@ const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {
 					<Link
 						to="/contact"
 						onClick={() => setMenuOpen(false)}
-						className={`mt-2 w-80 max-w-xs py-6 border-2 border-blue-600 text-blue-600 text-2xl font-helvetica rounded-lg focus:outline-none transform transition-transform transition-opacity duration-500 hover:bg-blue-600 hover:text-white ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
+						className={`mt-2 w-80 max-w-xs py-6 border-2 border-blue-600 text-blue-600 text-2xl font-helvetica rounded-lg block text-center focus:outline-none transform transition-transform transition-opacity duration-500 hover:bg-blue-600 hover:text-white ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
 						style={{ transitionDelay: menuOpen ? `${navItems.length * 100 + 100}ms` : '0ms' }}
 					>
 						Get in Touch
