@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Lenis from 'lenis'
 import Navbar from '../components/Navbar'
@@ -6,9 +6,19 @@ import ScrollToTop from '../components/ScrollToTop'
 
 const AboutPage = () => {
   const navigate = useNavigate()
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
 
   useEffect(() => {
     window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   useEffect(() => {
@@ -37,17 +47,26 @@ const AboutPage = () => {
       <Navbar isDarkMode={false} />
       
       {/* Hero Banner */}
-      <section className="relative min-h-[60vh] md:min-h-[70vh] bg-gradient-to-b from-blue-600 to-blue-800 dark:from-blue-900 dark:to-black flex items-center justify-center overflow-hidden">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(68,_68,_68,_.2)_25%,rgba(68,_68,_68,_.2)_50%,transparent_50%,transparent_75%,rgba(68,_68,_68,_.2)_75%,rgba(68,_68,_68,_.2))] bg-[length:60px_60px]"></div>
-        </div>
+      <section
+        className="relative min-h-[35vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden"
+        style={{
+          backgroundImage: isMobile
+            ? 'url(/assets/about/about-banner-mobile.avif)'
+            : 'url(/assets/about/about-banner-desktop.avif)',
+          backgroundSize: isMobile ? 'cover' : 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center center',
+          backgroundAttachment: isMobile ? 'scroll' : 'fixed'
+        }}
+      >
+        {/* Overlay for text readability */}
+        <div className="absolute inset-0 bg-black/40"></div>
 
         <div className="relative z-10 text-center px-6 md:px-12">
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-helvetica font-bold text-white mb-6 uppercase tracking-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-helvetica font-bold text-white mb-4 uppercase tracking-tight">
             Wesley Ojedapo
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 font-helvetica max-w-3xl mx-auto">
+          <p className="text-base md:text-lg text-white/90 font-helvetica max-w-3xl mx-auto">
             Visual Designer. Brand Strategist. Creative Problem Solver.
           </p>
         </div>
