@@ -6,7 +6,7 @@ const navItems = [
 	{ label: 'Home', path: '/' },
 	{ label: 'Works', path: '/works' },
 	// { label: 'Services', id: 'services' },
-	{ label: 'About Me', id: 'about' },
+	{ label: 'About Me', path: '/about' },
 	{ label: 'Contact', path: '/contact' },
 ];
 
@@ -29,17 +29,11 @@ const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {
 		setMenuOpen(false);
 	};
 
-	const goToAbout = () => {
-		scrollToSection('about');
-	};
-
 	const handleNavClick = (item: typeof navItems[0]) => {
 		if ('path' in item) {
-			setMenuOpen(false);
-		} else if (item.id === 'about') {
-			goToAbout();
+			setMenuOpen(false)
 		} else {
-			scrollToSection(item.id);
+			scrollToSection(item.id)
 		}
 	};
 
@@ -113,13 +107,14 @@ const Navbar = ({ isDarkMode }: { isDarkMode: boolean }) => {
 								)}
 							</div>
 						))}
-						<button
-							onClick={() => scrollToSection('contact')}
-							className={`mt-2 w-80 max-w-xs py-6 border-2 border-blue-600 text-blue-600 text-2xl font-helvetica rounded-lg focus:outline-none transform transition-transform transition-opacity duration-500 hover:bg-blue-600 hover:text-white ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
-							style={{ transitionDelay: menuOpen ? `${navItems.length * 100 + 100}ms` : '0ms' }}
-						>
-							Get in Touch
-						</button>
+					<Link
+						to="/contact"
+						onClick={() => setMenuOpen(false)}
+						className={`mt-2 w-80 max-w-xs py-6 border-2 border-blue-600 text-blue-600 text-2xl font-helvetica rounded-lg focus:outline-none transform transition-transform transition-opacity duration-500 hover:bg-blue-600 hover:text-white ${menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}
+						style={{ transitionDelay: menuOpen ? `${navItems.length * 100 + 100}ms` : '0ms' }}
+					>
+						Get in Touch
+					</Link>
 					</div>
 					{/* Close button - Moved down to avoid navbar coverage */}
 					<button
