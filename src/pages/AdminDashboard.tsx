@@ -119,7 +119,14 @@ export default function AdminDashboard() {
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === '1234567890$Im') {
+    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD
+    
+    if (!adminPassword) {
+      setAuthError('Admin password not configured. Please set VITE_ADMIN_PASSWORD in .env');
+      return
+    }
+    
+    if (password === adminPassword) {
       setIsAuthenticated(true);
       setAuthError('');
     } else {
@@ -128,8 +135,7 @@ export default function AdminDashboard() {
     }
   };
 
-  console.log('AdminDashboard render - isAuthenticated:', isAuthenticated, 'isLoading:', isLoading);
-
+  
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-neutral-950 text-white flex items-center justify-center px-6">
