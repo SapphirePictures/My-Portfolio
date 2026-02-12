@@ -79,20 +79,16 @@ export default function AdminDashboard() {
   }, [])
 
   useEffect(() => {
-    console.log('useEffect triggered - isAuthenticated:', isAuthenticated);
     if (isAuthenticated) {
-      console.log('Calling loadCaseStudies...');
       void loadCaseStudies()
     }
   }, [isAuthenticated])
 
   const loadCaseStudies = async () => {
-    console.log('loadCaseStudies called');
     setIsLoading(true)
     setError(null)
 
     if (!isSupabaseReady) {
-      console.log('Supabase not ready');
       setError('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file.')
       setIsLoading(false)
       return
@@ -123,13 +119,10 @@ export default function AdminDashboard() {
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Password submitted:', password);
     if (password === '1234567890$Im') {
-      console.log('Password correct, authenticating...');
       setIsAuthenticated(true);
       setAuthError('');
     } else {
-      console.log('Password incorrect');
       setAuthError('Incorrect password');
       setPassword('');
     }

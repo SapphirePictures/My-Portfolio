@@ -11,6 +11,45 @@ const ContactPage = () => {
     howHeard: '',
     message: '',
   })
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Email validation
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  // Form validation
+  const validateForm = (data: typeof formData) => {
+    const errors: Record<string, string> = {}
+
+    if (!data.name.trim()) {
+      errors.name = 'Name is required'
+    } else if (data.name.length > 100) {
+      errors.name = 'Name must be less than 100 characters'
+    }
+
+    if (!data.email.trim()) {
+      errors.email = 'Email is required'
+    } else if (!validateEmail(data.email)) {
+      errors.email = 'Please enter a valid email address'
+    }
+
+    if (data.jobTitle.length > 100) {
+      errors.jobTitle = 'Job title must be less than 100 characters'
+    }
+
+    if (!data.message.trim()) {
+      errors.message = 'Message is required'
+    } else if (data.message.length < 10) {
+      errors.message = 'Message must be at least 10 characters'
+    } else if (data.message.length > 5000) {
+      errors.message = 'Message must be less than 5000 characters'
+    }
+
+    return { isValid: Object.keys(errors).length === 0, errors }
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -37,6 +76,16 @@ const ContactPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setFormErrors({})
+
+    // Validate form
+    const { isValid, errors } = validateForm(formData)
+    if (!isValid) {
+      setFormErrors(errors)
+      return
+    }
+
+    setIsSubmitting(true)
     
     try {
       const response = await fetch('https://formspree.io/f/mvzbzpza', {
@@ -56,12 +105,14 @@ const ContactPage = () => {
       if (response.ok) {
         alert('Thank you for reaching out! I will get back to you soon.')
         setFormData({ name: '', email: '', jobTitle: '', howHeard: '', message: '' })
+        setFormErrors({})
       } else {
-        alert('Something went wrong. Please try again or email me directly.')
+        setFormErrors({ submit: 'Something went wrong. Please try again or email me directly.' })
       }
     } catch (error) {
-      console.error('Form submission error:', error)
-      alert('Something went wrong. Please try again or email me directly.')
+      setFormErrors({ submit: 'Something went wrong. Please try again or email me directly.' })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -121,9 +172,15 @@ const ContactPage = () => {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="your name"
-                    required
-                    className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-helvetica text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                    className={`w-full px-4 py-3 bg-white dark:bg-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all font-helvetica text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 ${
+                      formErrors.name
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 dark:border-gray-700 focus:ring-blue-500'
+                    }`}
                   />
+                  {formErrors.name && (
+                    <p className="text-red-500 text-sm mt-1 font-helvetica">{formErrors.name}</p>
+                  )}
                 </div>
 
                 <div>
@@ -137,9 +194,15 @@ const ContactPage = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="you@company.com"
-                    required
-                    className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-helvetica text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                    className={`w-full px-4 py-3 bg-white dark:bg-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all font-helvetica text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 ${
+                      formErrors.email
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 dark:border-gray-700 focus:ring-blue-500'
+                    }`}
                   />
+                  {formErrors.email && (
+                    <p className="text-red-500 text-sm mt-1 font-helvetica">{formErrors.email}</p>
+                  )}
                 </div>
               </div>
 
@@ -154,8 +217,15 @@ const ContactPage = () => {
                   value={formData.jobTitle}
                   onChange={handleChange}
                   placeholder="your role or title"
-                  className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-helvetica text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                  className={`w-full px-4 py-3 bg-white dark:bg-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all font-helvetica text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 ${
+                    formErrors.jobTitle
+                      ? 'border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 dark:border-gray-700 focus:ring-blue-500'
+                  }`}
                 />
+                {formErrors.jobTitle && (
+                  <p className="text-red-500 text-sm mt-1 font-helvetica">{formErrors.jobTitle}</p>
+                )}
               </div>
 
               <div>
@@ -195,11 +265,26 @@ const ContactPage = () => {
                   value={formData.message}
                   onChange={handleChange}
                   placeholder="tell me a bit about your project or idea..."
-                  required
                   rows={6}
-                  className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-helvetica resize-none text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                  className={`w-full px-4 py-3 bg-white dark:bg-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all font-helvetica resize-none text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 ${
+                    formErrors.message
+                      ? 'border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 dark:border-gray-700 focus:ring-blue-500'
+                  }`}
                 />
+                {formErrors.message && (
+                  <p className="text-red-500 text-sm mt-1 font-helvetica">{formErrors.message}</p>
+                )}
+                <p className="text-gray-400 text-xs mt-1 font-helvetica">
+                  {formData.message.length}/5000 characters
+                </p>
               </div>
+
+              {formErrors.submit && (
+                <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+                  <p className="text-red-700 dark:text-red-400 font-helvetica text-sm">{formErrors.submit}</p>
+                </div>
+              )}
 
               <p className="text-sm text-gray-500 dark:text-gray-400 font-helvetica">
                 By submitting, you agree to be contacted for project-related inquiries.
@@ -207,9 +292,10 @@ const ContactPage = () => {
 
               <button
                 type="submit"
-                className="px-8 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-md font-helvetica font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+                disabled={isSubmitting}
+                className="w-full px-8 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-helvetica font-medium text-lg transition-colors duration-200"
               >
-                Send
+                {isSubmitting ? 'Sending...' : 'Send Message'}
               </button>
             </form>
           </div>
